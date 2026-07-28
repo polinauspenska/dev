@@ -528,12 +528,13 @@
   var RISE_END        = 0.45;
   var EXPAND_START    = 0.45;
   var EXPAND_END      = 0.95;
-  var HEADER_THRESHOLD = 0.9;
 
   // Local coordinate space of the icon group drawn above (real AFM logo, 4 vector strokes, lossless at any scale)
   var HULL_W = 300.168, HULL_H = 260.465;
   var HULL_CX = HULL_W/2, HULL_CY = HULL_H/2;
-  var MASK_MIN_W = 320; // px, hole width once fully appeared (bottom, before rise) -- 200% of original 160px
+  var MASK_MIN_W_DESKTOP = 820; // px, hole width once fully appeared (bottom, before rise)
+  var MASK_MIN_W_MOBILE = 640;   // px, same but on narrow/mobile viewports
+  var MOBILE_BREAKPOINT = 1024;  // matches the .hero-content layout breakpoint
   var APPEAR_END = 0.05; // progress at which the shape has fully grown in from nothing
 
   var scrollTicking = false;
@@ -561,18 +562,23 @@
       heroLinesArr[i].style.opacity = textOpacity;
     }
 
-    // enough to fully cover the viewport once centered, regardless of aspect ratio
-    var MASK_MAX_W = Math.max(vw, vh / (HULL_H/HULL_W)) * 1.35;
+    // Guarantee the wash fully spans the section's width AND height at full expansion,
+    // regardless of viewport aspect ratio.
+    var MASK_MAX_W = Math.max(vw, vh / (HULL_H/HULL_W)) * 1.7;
+    var MASK_MIN_W = vw < MOBILE_BREAKPOINT ? MASK_MIN_W_MOBILE : MASK_MIN_W_DESKTOP;
 
     var holeW, cxPct, cyPct;
     // Phase 0: nothing is visible until the user actually scrolls -- the shape
-    // grows in from zero right at the bottom, so at progress===0 it's fully hidden.
+    // starts off-screen below the bottom edge and slides straight up into view
+    // while growing, so it always visibly emerges from the bottom, never "pops in"
+    // at a fixed mid-screen spot.
     // Phase 1 + 2: the hero itself never moves (position:sticky) -- only the
     // shape (drawn directly in the SVG) rises then expands.
     if (progress <= APPEAR_END){
       var t0 = clamp01(progress / APPEAR_END);
-      holeW = MASK_MIN_W * easeInOutQuad(t0);
-      cyPct = 88;
+      var eased0 = easeInOutQuad(t0);
+      holeW = MASK_MIN_W * eased0;
+      cyPct = lerp(110, 88, eased0); // below the bottom edge -> resting position
       cxPct = 50;
     } else if (progress <= RISE_END){
       var t1 = clamp01((progress - RISE_START) / (RISE_END - RISE_START));
@@ -595,8 +601,10 @@
     var ty = cy - HULL_CY*scale;
     revealHole.setAttribute('transform', 'translate(' + tx + ',' + ty + ') scale(' + scale + ')');
 
-    // Phase 3: header only appears once the reveal has essentially covered the section
-    if (progress >= HEADER_THRESHOLD){
+    // Phase 3: header appears at the exact moment the mask's top edge actually
+    // reaches/touches the top of the section -- driven by real geometry (ty),
+    // not a hardcoded scroll-progress guess.
+    if (ty <= 0){
       siteHeader.classList.add('visible');
     } else {
       siteHeader.classList.remove('visible');
