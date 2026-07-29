@@ -92,13 +92,15 @@
   /* ---------- Hero ---------- */
   .hero-scroll-wrap{
     position:relative;
-    height:220vh;
+    height:290vh;
+    height:290dvh; /* dynamic viewport height: keeps mobile browsers (address-bar show/hide) from throwing the scroll-progress math off and making the sequence feel jumpy vs. desktop */
   }
   .hero{
     position:sticky;
     top:0;
     width:100%;
     height:100vh;
+    height:100dvh;
     overflow:hidden;
     background:#000;
   }
@@ -110,6 +112,15 @@
     z-index:14;
     pointer-events:none;
     display:block;
+  }
+  .curtain-panel{
+    position:absolute;
+    inset:0;
+    background:#f3f2f2;
+    z-index:15;
+    pointer-events:none;
+    opacity:0;
+    will-change:opacity;
   }
   .hero-video{
     position:absolute;
@@ -308,12 +319,119 @@
     transform:translateX(0);
   }
 
-  /* ---------- Placeholder next section (so there is room to scroll) ---------- */
-  .next-section{
-    position:relative;
+  /* ---------- Reveal content: appears on top of the hero once it is fully opaque white.
+     Every element's opacity/transform below is set directly by the scroll handler
+     (no CSS transitions here) so the heading, then the numbers, then the copy each
+     reveal strictly in step with scroll position -- not on a timer. ---------- */
+  .hero-reveal-content{
+    position:absolute;
+    inset:0;
+    z-index:16;
+    display:flex;
+    align-items:center;
+    padding:80px 60px;
+    pointer-events:none;
+  }
+  .next-content{
     width:100%;
-    height:100vh;
-    background:var(--bg);
+    max-width:900px;
+    margin:0 auto;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+  }
+  .reveal-group{
+    opacity:0;
+    will-change:opacity, transform;
+  }
+  .next-eyebrow{
+    font-family:'Jost', sans-serif;
+    font-size:11px;
+    font-weight:400;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    color:var(--gold-2);
+    margin:0 0 14px;
+  }
+  .next-heading{
+    font-family:'Jost', sans-serif;
+    font-weight:300;
+    font-size:38px;
+    line-height:1.15;
+    color:#111214;
+    margin:0 0 40px;
+  }
+  .next-copy{
+    max-width:640px;
+    margin:0 auto;
+  }
+  .next-copy p{
+    font-family:'Jost', sans-serif;
+    font-weight:normal;
+    font-size:15px;
+    line-height:1.75;
+    color:#3a3a3c;
+    margin:0 0 18px;
+  }
+  .next-footnote{
+    font-family:'Jost', sans-serif;
+    font-style:italic;
+    font-size:12px;
+    color:#8a8a8c;
+    margin-top:12px;
+  }
+  .next-stats{
+    display:grid;
+    grid-template-columns:repeat(4, minmax(0,1fr));
+    width:100%;
+    max-width:780px;
+    margin:0 0 44px;
+  }
+  .next-stat{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:0 12px;
+    opacity:0;
+    will-change:opacity, transform;
+  }
+  .next-stat + .next-stat{
+    border-left:1px solid rgba(17,18,20,0.1);
+  }
+  .next-stat-value{
+    font-family:'Jost', sans-serif;
+    font-weight:300;
+    font-size:32px;
+    min-width:3.6ch;
+    color:var(--gold-2);
+    line-height:1.1;
+    text-align:center;
+    font-variant-numeric:tabular-nums;
+    font-feature-settings:"tnum";
+  }
+  .next-stat-label{
+    font-family:'Jost', sans-serif;
+    font-size:10.5px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:#6b6b6d;
+    margin-top:10px;
+    text-align:center;
+  }
+  @media (max-width:640px){
+    .next-stats{
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      row-gap:26px;
+      max-width:340px;
+    }
+    /* plain text on mobile, no borders/tiles -- just the 2-column grid */
+    .next-stat{
+      border-left:none !important;
+    }
+    .next-stat-value{
+      font-size:26px;
+    }
   }
 </style>
 </head>
@@ -361,10 +479,42 @@
           </g>
         </g>
       </svg>
+      <div class="curtain-panel" id="curtainPanel"></div>
+      <div class="hero-reveal-content" id="heroRevealContent">
+        <div class="next-content">
+          <div class="reveal-group" id="revealHeading">
+            <p class="next-eyebrow">Welcome to AFM Developments</p>
+            <h2 class="next-heading">Architecturally Focused Masterpieces</h2>
+          </div>
+          <div class="next-stats" id="revealStats">
+            <div class="next-stat">
+              <div class="next-stat-value" data-count-to="2024">2024</div>
+              <div class="next-stat-label">Founded</div>
+            </div>
+            <div class="next-stat">
+              <div class="next-stat-value" data-count-to="350" data-suffix="M+">350M+</div>
+              <div class="next-stat-label">Portfolio Value (AED)</div>
+            </div>
+            <div class="next-stat">
+              <div class="next-stat-value" data-count-to="2">2</div>
+              <div class="next-stat-label">Flagship Developments</div>
+            </div>
+            <div class="next-stat">
+              <div class="next-stat-value">Dubai</div>
+              <div class="next-stat-label">Headquarter</div>
+            </div>
+          </div>
+          <div class="reveal-group" id="revealCopy">
+            <div class="next-copy">
+              <p>AFM is built on a single conviction: every property carries the capacity to become exceptional. We fuse cutting-edge design with meticulous attention to detail to create spaces that inspire and transform how people live, work, and gather.</p>
+              <p>That same passion for excellence runs through every stage of our work — in construction and in the finished product alike — ensuring exceptional value at every turn.</p>
+            </div>
+            <p class="next-footnote">* Illustrative figures — confirm against AFM's audited company data before publication.</p>
+          </div>
+        </div>
+      </div>
     </section>
   </div>
-
-  <section class="next-section"></section>
 
 <script>
 (function(){
@@ -517,11 +667,38 @@
   var heroEl = document.querySelector('.hero');
   var revealOverlay = document.getElementById('revealOverlay');
   var revealHole = document.getElementById('revealHole');
+  var curtainPanel = document.getElementById('curtainPanel');
+  var heroRevealContent = document.getElementById('heroRevealContent');
   var heroLinesArr = document.querySelectorAll('.hero-line');
+  var revealHeadingEl = document.getElementById('revealHeading');
+  var revealCopyEl = document.getElementById('revealCopy');
+  var statEls = document.querySelectorAll('.next-stat'); // container divs, in display order
+  var statValueEls = document.querySelectorAll('.next-stat-value'); // value spans, same order as statEls
+  var statTargets = [];
+  var statSuffixes = [];
+  for (var si=0; si<statValueEls.length; si++){
+    var countAttr = statValueEls[si].getAttribute('data-count-to');
+    statTargets.push(countAttr !== null ? parseInt(countAttr, 10) : null);
+    statSuffixes.push(statValueEls[si].getAttribute('data-suffix') || '');
+    // keep the static final text around so non-numeric stats (e.g. "Dubai") are untouched
+    if (countAttr === null){
+      statValueEls[si].setAttribute('data-static-text', statValueEls[si].textContent);
+    }
+  }
 
   function easeInOutQuad(t){ return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2,2)/2; }
+  function easeOutCubic(t){ return 1 - Math.pow(1 - t, 3); }
   function clamp01(v){ return Math.max(0, Math.min(1, v)); }
   function lerp(a,b,t){ return a + (b-a)*t; }
+
+  // Sets opacity + a small upward rise on `el`, driven purely by `t` (0..1) -- no
+  // CSS transition involved, so it tracks the current scroll position exactly,
+  // every frame, in either scroll direction.
+  function applyReveal(el, t){
+    var eased = easeOutCubic(clamp01(t));
+    el.style.opacity = eased;
+    el.style.transform = 'translateY(' + lerp(16, 0, eased) + 'px)';
+  }
 
   // Strictly sequential phases -- each one fully completes before the next begins:
   //   1) TEXT   : hero lines fade out
@@ -534,10 +711,31 @@
   //               so the visible area becomes pure solid fill by EXPAND_END -- the
   //               white coverage is a direct, literal product of scaling the real
   //               geometry, nothing else layered on top.
-  var TEXT_FADE_END = 0.15; // phase 1 ends: text fully gone
-  var MASK_START     = 0.19; // phase 3 starts: small pause after text disappears
-  var MOVE_END       = 0.45; // phase 3 ends: mask centered
-  var EXPAND_END     = 0.85; // phase 4 ends: full coverage
+  //   5) SOLID  : once the section is fully washed in semi-transparent white, a
+  //               solid ivory fill (brand "Ivory" #F3F2F2, matching the deck's
+  //               light slides) cross-fades in quickly on top -- a fast, flat
+  //               opacity flip from transparent to fully opaque, not a panel
+  //               sliding/layering in from off-screen.
+  //   6) HEADING : the eyebrow + heading fade/rise in, tied directly to scroll --
+  //               only once fully in do the numbers begin.
+  //   7) STATS  : all four stat cards reveal and count up together, as one group,
+  //               not staggered -- only once fully in does the copy begin, soon after.
+  //   8) COPY   : the paragraphs + footnote fade/rise in last.
+  // The wrap is taller than earlier revisions specifically to give phases 6-8 real
+  // scroll distance of their own, so each is "stuck" to scroll position exactly
+  // like the mask/curtain phases above it -- nothing here plays out on a timer.
+  var TEXT_FADE_END = 0.093;  // phase 1 ends: text fully gone
+  var MASK_START     = 0.116; // phase 3 starts: small pause after text disappears
+  var MOVE_END       = 0.284; // phase 3 ends: mask centered
+  var EXPAND_END     = 0.505; // phase 4 ends: full coverage (semi-transparent)
+  var CURTAIN_START  = 0.486;  // phase 5 starts a touch before expansion visually finishes
+  var CURTAIN_END    = 0.518; // phase 5 ends -- fast flip to opaque ivory
+  var HEADING_START  = 0.518; // phase 6 starts right as the flip finishes
+  var HEADING_END    = 0.633;
+  var STATS_START    = 0.665;
+  var STATS_END      = 0.791;
+  var COPY_START     = 0.812; // soon after the stats finish
+  var COPY_END       = 0.949;
 
   // Local coordinate space of the icon group drawn above (real AFM logo, 4 vector strokes, lossless at any scale)
   var HULL_W = 300.168, HULL_H = 260.465;
@@ -555,13 +753,31 @@
   var MASK_MIN_W_MOBILE = 640;   // px, same but on narrow/mobile viewports
   var MOBILE_BREAKPOINT = 1024;  // matches the .hero-content layout breakpoint
 
+  // Layout geometry (wrap height, viewport size) is only read on load/resize, never
+  // inside the per-frame scroll handler. On mobile, re-reading offsetHeight/innerHeight
+  // every scroll frame -- right as the browser's address bar is animating in/out --
+  // makes the wrap's own height shift mid-scroll and the sequence stutter/jump in a
+  // way desktop never shows. Caching it keeps the math (and the motion) identical
+  // to desktop regardless of device.
+  var cachedWrapHeight = 0;
+  var cachedVW = 0;
+  var cachedVH = 0;
+  function recalcGeometry(){
+    cachedVH = window.innerHeight;
+    cachedWrapHeight = heroScrollWrap.offsetHeight;
+    cachedVW = heroEl.clientWidth || window.innerWidth;
+  }
+  recalcGeometry();
+  window.addEventListener('resize', recalcGeometry);
+  window.addEventListener('orientationchange', recalcGeometry);
+
   var scrollTicking = false;
 
   function updateScrollEffects(){
     scrollTicking = false;
     var scrollY = window.scrollY || window.pageYOffset;
-    var vh = window.innerHeight;
-    var vw = heroEl.clientWidth || window.innerWidth;
+    var vh = cachedVH;
+    var vw = cachedVW;
 
     // scroll hint disappears the moment scrolling starts
     if (scrollY > 10){
@@ -570,7 +786,7 @@
       scrollHint.classList.remove('hide');
     }
 
-    var wrapHeight = heroScrollWrap.offsetHeight;
+    var wrapHeight = cachedWrapHeight;
     var scrollable = Math.max(wrapHeight - vh, 1);
     var progress = clamp01(scrollY / scrollable);
 
@@ -619,7 +835,7 @@
       cyPct = lerp(110, 50, eased1);
       cxPct = 50;
       pivotX = BBOX_CX; pivotY = BBOX_CY; headerReady = false;
-    } else {
+    } else if (progress <= EXPAND_END){
       // Phase 4: the same rigid group keeps scaling up. Early in this phase the
       // pivot eases from the visual center over to the solid-interior point (so
       // the transition out of "centered logo" is smooth, not a jump), then holds
@@ -636,6 +852,15 @@
       // Header appears partway through expansion -- well before full coverage
       // completes, not gated on the last few percent of growth.
       headerReady = t2 >= HEADER_AT_T2;
+    } else {
+      // Phase 5: expansion is done and the section is fully washed in white --
+      // hold the mask at its final covering size/position while the solid ivory
+      // fill quickly cross-fades in on top to finish the transition.
+      holeW = MASK_MAX_W;
+      cxPct = 50;
+      cyPct = 50;
+      pivotX = PIVOT_X; pivotY = PIVOT_Y;
+      headerReady = true;
     }
 
     var scale = holeW / HULL_W;
@@ -644,6 +869,37 @@
     var tx = cx - pivotX*scale;
     var ty = cy - pivotY*scale;
     revealHole.setAttribute('transform', 'translate(' + tx + ',' + ty + ') scale(' + scale + ')');
+
+    // Phase 5: flat cross-fade to fully opaque ivory, starting a bit before
+    // expansion is technically finished -- a quick opacity flip, not a panel
+    // sliding/layering in.
+    var curtainT = clamp01((progress - CURTAIN_START) / (CURTAIN_END - CURTAIN_START));
+    curtainPanel.style.opacity = easeInOutQuad(curtainT);
+
+    // Phase 6: heading + eyebrow -- first to appear, driven directly by progress.
+    var tHeading = clamp01((progress - HEADING_START) / (HEADING_END - HEADING_START));
+    applyReveal(revealHeadingEl, tHeading);
+
+    // Phase 7: all four stat cards reveal and count up together, as one group --
+    // a single shared progress fraction, no per-stat stagger. Each number is a
+    // pure function of that same fraction, so scrolling up un-counts them exactly
+    // as smoothly as scrolling down counts them up.
+    var tStats = clamp01((progress - STATS_START) / (STATS_END - STATS_START));
+    var statsEased = easeOutCubic(tStats);
+    for (var i=0; i<statEls.length; i++){
+      applyReveal(statEls[i], tStats);
+      var target = statTargets[i];
+      if (target !== null){
+        statValueEls[i].textContent = Math.round(target * statsEased) + statSuffixes[i];
+      }
+    }
+
+    // Phase 8: copy + footnote fade/rise in last, only after the stats window ends.
+    var tCopy = clamp01((progress - COPY_START) / (COPY_END - COPY_START));
+    applyReveal(revealCopyEl, tCopy);
+
+    // Let clicks through only once the section has meaningfully appeared.
+    heroRevealContent.style.pointerEvents = progress >= HEADING_START ? 'auto' : 'none';
 
     // Header appears partway through expansion (see HEADER_AT_T2), well before
     // coverage is literally 100% complete.
