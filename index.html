@@ -417,12 +417,12 @@
   var finished = false;
 
   function revealHero(){
-    // 2 seconds after the preloader begins handing off to the hero
+    // shortly after the preloader begins handing off to the hero
     setTimeout(function(){
       for (var i=0;i<heroLines.length;i++){
         heroLines[i].classList.add('show');
       }
-    }, 2000);
+    }, 700);
   }
 
   function frame(ts){
@@ -523,19 +523,36 @@
   function clamp01(v){ return Math.max(0, Math.min(1, v)); }
   function lerp(a,b,t){ return a + (b-a)*t; }
 
-  var TEXT_FADE_END   = 0.12;
-  var RISE_START      = 0.05;
-  var RISE_END        = 0.45;
-  var EXPAND_START    = 0.45;
-  var EXPAND_END      = 0.95;
+  // Strictly sequential phases -- each one fully completes before the next begins:
+  //   1) TEXT   : hero lines fade out
+  //   2) (pause): brief hold with nothing on screen
+  //   3) MOVE   : the real logo icon (all 4 shapes, rigid group) grows in from
+  //               off-screen bottom and slides to center
+  //   4) EXPAND : the same rigid group keeps scaling up, uniformly, around a pivot
+  //               point verified to sit deep inside one of the solid shapes. As
+  //               scale grows, the nearest shape edge recedes outside the viewport,
+  //               so the visible area becomes pure solid fill by EXPAND_END -- the
+  //               white coverage is a direct, literal product of scaling the real
+  //               geometry, nothing else layered on top.
+  var TEXT_FADE_END = 0.15; // phase 1 ends: text fully gone
+  var MASK_START     = 0.19; // phase 3 starts: small pause after text disappears
+  var MOVE_END       = 0.45; // phase 3 ends: mask centered
+  var EXPAND_END     = 0.85; // phase 4 ends: full coverage
 
   // Local coordinate space of the icon group drawn above (real AFM logo, 4 vector strokes, lossless at any scale)
   var HULL_W = 300.168, HULL_H = 260.465;
-  var HULL_CX = HULL_W/2, HULL_CY = HULL_H/2;
-  var MASK_MIN_W_DESKTOP = 820; // px, hole width once fully appeared (bottom, before rise)
+  var BBOX_CX = HULL_W/2, BBOX_CY = HULL_H/2; // true visual center -- used while the logo is small/resting, so it looks properly centered
+  // Pivot used only once expansion is well underway: NOT the bounding-box center
+  // (that point sits in the icon's own negative space/gap and would show that gap
+  // forever, at any scale). This is a point verified (via polygon interior-distance
+  // search) to sit ~17 local units deep inside one of the 4 solid shapes, so
+  // zooming in around it converges to pure solid fill.
+  var PIVOT_X = 114.6, PIVOT_Y = 142.25;
+  var PIVOT_CLEARANCE = 15; // local units of guaranteed solid material around the pivot
+  var PIVOT_BLEND_END = 0.6; // fraction of the EXPAND phase over which the pivot eases from BBOX center to the solid-interior point
+  var MASK_MIN_W_DESKTOP = 820; // px, mask width once centered (before expanding)
   var MASK_MIN_W_MOBILE = 640;   // px, same but on narrow/mobile viewports
   var MOBILE_BREAKPOINT = 1024;  // matches the .hero-content layout breakpoint
-  var APPEAR_END = 0.05; // progress at which the shape has fully grown in from nothing
 
   var scrollTicking = false;
 
@@ -556,55 +573,79 @@
     var scrollable = Math.max(wrapHeight - vh, 1);
     var progress = clamp01(scrollY / scrollable);
 
-    // Phase 0: hero text fades out first
-    var textOpacity = 1 - clamp01(progress / TEXT_FADE_END);
-    for (var i=0; i<heroLinesArr.length; i++){
-      heroLinesArr[i].style.opacity = textOpacity;
+    // Phase 0: hero text fades out first -- but only once the user actually starts
+    // scrolling. At rest (scrollY===0) we leave the inline style untouched so the
+    // CSS-driven entrance animation (.hero-line.show, fired ~2s after the preloader
+    // hands off) is what reveals the text, instead of this scroll handler forcing
+    // it instantly visible on page load.
+    if (scrollY > 0){
+      var textOpacity = 1 - clamp01(progress / TEXT_FADE_END);
+      for (var i=0; i<heroLinesArr.length; i++){
+        heroLinesArr[i].style.opacity = textOpacity;
+      }
+    } else {
+      for (var i=0; i<heroLinesArr.length; i++){
+        heroLinesArr[i].style.opacity = '';
+      }
     }
 
-    // Guarantee the wash fully spans the section's width AND height at full expansion,
-    // regardless of viewport aspect ratio.
-    var MASK_MAX_W = Math.max(vw, vh / (HULL_H/HULL_W)) * 1.7;
+    // Scale needed so that, pivoting around PIVOT_X/Y, the guaranteed-solid disk
+    // around the pivot grows to cover the viewport's half-diagonal -- i.e. every
+    // corner of the section is provably inside solid fill by the end of EXPAND.
+    var halfDiag = Math.hypot(vw, vh) / 2;
+    var neededScale = (halfDiag * 1.15) / PIVOT_CLEARANCE;
+    var MASK_MAX_W = neededScale * HULL_W;
     var MASK_MIN_W = vw < MOBILE_BREAKPOINT ? MASK_MIN_W_MOBILE : MASK_MIN_W_DESKTOP;
 
-    var holeW, cxPct, cyPct;
-    // Phase 0: nothing is visible until the user actually scrolls -- the shape
-    // starts off-screen below the bottom edge and slides straight up into view
-    // while growing, so it always visibly emerges from the bottom, never "pops in"
-    // at a fixed mid-screen spot.
-    // Phase 1 + 2: the hero itself never moves (position:sticky) -- only the
-    // shape (drawn directly in the SVG) rises then expands.
-    if (progress <= APPEAR_END){
-      var t0 = clamp01(progress / APPEAR_END);
-      var eased0 = easeInOutQuad(t0);
-      holeW = MASK_MIN_W * eased0;
-      cyPct = lerp(110, 88, eased0); // below the bottom edge -> resting position
+    var holeW, cxPct, cyPct, pivotX, pivotY, pivotIsSolid;
+    // The hero itself never moves (position:sticky) -- only the shape (drawn
+    // directly in the SVG) animates, and each phase below only starts once the
+    // previous one has fully finished.
+    if (progress <= MASK_START){
+      // Phase 2 (pause): text is gone, mask hasn't started yet -- nothing visible.
+      holeW = 0;
+      cyPct = 110;
       cxPct = 50;
-    } else if (progress <= RISE_END){
-      var t1 = clamp01((progress - RISE_START) / (RISE_END - RISE_START));
+      pivotX = BBOX_CX; pivotY = BBOX_CY; pivotIsSolid = false;
+    } else if (progress <= MOVE_END){
+      // Phase 3: the real icon (rigid group, all 4 shapes) grows in from
+      // off-screen bottom and slides to center -- pivoting on its true visual
+      // center so it reads as properly centered while at rest.
+      var t1 = clamp01((progress - MASK_START) / (MOVE_END - MASK_START));
       var eased1 = easeInOutQuad(t1);
-      cyPct = lerp(88, 50, eased1); // percent, bottom -> center
+      holeW = MASK_MIN_W * eased1;
+      cyPct = lerp(110, 50, eased1);
       cxPct = 50;
-      holeW = MASK_MIN_W;
+      pivotX = BBOX_CX; pivotY = BBOX_CY; pivotIsSolid = false;
     } else {
-      var t2 = clamp01((progress - EXPAND_START) / (EXPAND_END - EXPAND_START));
+      // Phase 4: the same rigid group keeps scaling up. Early in this phase the
+      // pivot eases from the visual center over to the solid-interior point (so
+      // the transition out of "centered logo" is smooth, not a jump), then holds
+      // there so growth is guaranteed to swallow the whole viewport in solid fill.
+      var t2 = clamp01((progress - MOVE_END) / (EXPAND_END - MOVE_END));
       var eased2 = easeInOutQuad(t2);
       holeW = lerp(MASK_MIN_W, MASK_MAX_W, eased2);
       cxPct = 50;
       cyPct = 50;
+      var tBlend = clamp01(t2 / PIVOT_BLEND_END);
+      var easedBlend = easeInOutQuad(tBlend);
+      pivotX = lerp(BBOX_CX, PIVOT_X, easedBlend);
+      pivotY = lerp(BBOX_CY, PIVOT_Y, easedBlend);
+      pivotIsSolid = tBlend >= 1;
     }
 
     var scale = holeW / HULL_W;
     var cx = vw * (cxPct/100);
     var cy = vh * (cyPct/100);
-    var tx = cx - HULL_CX*scale;
-    var ty = cy - HULL_CY*scale;
+    var tx = cx - pivotX*scale;
+    var ty = cy - pivotY*scale;
     revealHole.setAttribute('transform', 'translate(' + tx + ',' + ty + ') scale(' + scale + ')');
 
-    // Phase 3: header appears at the exact moment the mask's top edge actually
-    // reaches/touches the top of the section -- driven by real geometry (ty),
-    // not a hardcoded scroll-progress guess.
-    if (ty <= 0){
+    // Header appears once the pivot has fully settled on the solid-interior point
+    // AND the viewport is provably fully covered in solid fill (the guaranteed-
+    // solid radius around that pivot now exceeds the half-diagonal).
+    var coverageRadius = scale * PIVOT_CLEARANCE;
+    if (pivotIsSolid && coverageRadius >= halfDiag){
       siteHeader.classList.add('visible');
     } else {
       siteHeader.classList.remove('visible');
