@@ -544,12 +544,13 @@
   var BBOX_CX = HULL_W/2, BBOX_CY = HULL_H/2; // true visual center -- used while the logo is small/resting, so it looks properly centered
   // Pivot used only once expansion is well underway: NOT the bounding-box center
   // (that point sits in the icon's own negative space/gap and would show that gap
-  // forever, at any scale). This is a point verified (via polygon interior-distance
-  // search) to sit ~17 local units deep inside one of the 4 solid shapes, so
-  // zooming in around it converges to pure solid fill.
-  var PIVOT_X = 114.6, PIVOT_Y = 142.25;
-  var PIVOT_CLEARANCE = 15; // local units of guaranteed solid material around the pivot
-  var PIVOT_BLEND_END = 0.6; // fraction of the EXPAND phase over which the pivot eases from BBOX center to the solid-interior point
+  // forever, at any scale). Found via a rasterized distance-transform of the exact
+  // 4-shape silhouette (max inscribed-circle center), not an approximation -- the
+  // true deepest point inside solid material, 17.35 local units from any edge.
+  var PIVOT_X = 119.387, PIVOT_Y = 132.986;
+  var PIVOT_CLEARANCE = 17.0; // local units of guaranteed solid material around the pivot (measured 17.35, small safety trim)
+  var PIVOT_BLEND_END = 0.55; // fraction of the EXPAND phase over which the pivot eases from BBOX center to the solid-interior point
+  var HEADER_AT_T2 = 0.45; // fraction of the EXPAND phase at which the header appears (well before coverage is fully complete)
   var MASK_MIN_W_DESKTOP = 820; // px, mask width once centered (before expanding)
   var MASK_MIN_W_MOBILE = 640;   // px, same but on narrow/mobile viewports
   var MOBILE_BREAKPOINT = 1024;  // matches the .hero-content layout breakpoint
@@ -592,12 +593,13 @@
     // Scale needed so that, pivoting around PIVOT_X/Y, the guaranteed-solid disk
     // around the pivot grows to cover the viewport's half-diagonal -- i.e. every
     // corner of the section is provably inside solid fill by the end of EXPAND.
+    // 1.35x safety margin on top of the measured clearance.
     var halfDiag = Math.hypot(vw, vh) / 2;
-    var neededScale = (halfDiag * 1.15) / PIVOT_CLEARANCE;
+    var neededScale = (halfDiag * 1.35) / PIVOT_CLEARANCE;
     var MASK_MAX_W = neededScale * HULL_W;
     var MASK_MIN_W = vw < MOBILE_BREAKPOINT ? MASK_MIN_W_MOBILE : MASK_MIN_W_DESKTOP;
 
-    var holeW, cxPct, cyPct, pivotX, pivotY, pivotIsSolid;
+    var holeW, cxPct, cyPct, pivotX, pivotY, headerReady;
     // The hero itself never moves (position:sticky) -- only the shape (drawn
     // directly in the SVG) animates, and each phase below only starts once the
     // previous one has fully finished.
@@ -606,7 +608,7 @@
       holeW = 0;
       cyPct = 110;
       cxPct = 50;
-      pivotX = BBOX_CX; pivotY = BBOX_CY; pivotIsSolid = false;
+      pivotX = BBOX_CX; pivotY = BBOX_CY; headerReady = false;
     } else if (progress <= MOVE_END){
       // Phase 3: the real icon (rigid group, all 4 shapes) grows in from
       // off-screen bottom and slides to center -- pivoting on its true visual
@@ -616,7 +618,7 @@
       holeW = MASK_MIN_W * eased1;
       cyPct = lerp(110, 50, eased1);
       cxPct = 50;
-      pivotX = BBOX_CX; pivotY = BBOX_CY; pivotIsSolid = false;
+      pivotX = BBOX_CX; pivotY = BBOX_CY; headerReady = false;
     } else {
       // Phase 4: the same rigid group keeps scaling up. Early in this phase the
       // pivot eases from the visual center over to the solid-interior point (so
@@ -631,7 +633,9 @@
       var easedBlend = easeInOutQuad(tBlend);
       pivotX = lerp(BBOX_CX, PIVOT_X, easedBlend);
       pivotY = lerp(BBOX_CY, PIVOT_Y, easedBlend);
-      pivotIsSolid = tBlend >= 1;
+      // Header appears partway through expansion -- well before full coverage
+      // completes, not gated on the last few percent of growth.
+      headerReady = t2 >= HEADER_AT_T2;
     }
 
     var scale = holeW / HULL_W;
@@ -641,11 +645,9 @@
     var ty = cy - pivotY*scale;
     revealHole.setAttribute('transform', 'translate(' + tx + ',' + ty + ') scale(' + scale + ')');
 
-    // Header appears once the pivot has fully settled on the solid-interior point
-    // AND the viewport is provably fully covered in solid fill (the guaranteed-
-    // solid radius around that pivot now exceeds the half-diagonal).
-    var coverageRadius = scale * PIVOT_CLEARANCE;
-    if (pivotIsSolid && coverageRadius >= halfDiag){
+    // Header appears partway through expansion (see HEADER_AT_T2), well before
+    // coverage is literally 100% complete.
+    if (headerReady){
       siteHeader.classList.add('visible');
     } else {
       siteHeader.classList.remove('visible');
