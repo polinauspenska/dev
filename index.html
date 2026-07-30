@@ -636,6 +636,7 @@
     height:100dvh;
     overflow:hidden;
     z-index:10;
+    background:var(--bg);
     transform:translate3d(0,100%,0);
     will-change:transform;
   }
@@ -966,7 +967,12 @@
 
   /* ---------- Express Your Interest: lead-capture form after the Chairman
      section. This is the first real target for the header/nav "Contact Us"
-     links (#contact) -- they pointed at this anchor before it existed. The
+     links (#contact) -- they pointed at this anchor before it existed.
+     Single centered column, top to bottom: eyebrow/heading/subcopy, then the
+     form, then the Reach Us / Drop A Mail / Call Us list -- rather than the
+     earlier two-column layout. The heading+form are sized to comfortably sit
+     within the first screen; the reach-list is allowed to fall onto a second
+     screen rather than forcing everything into one cramped viewport. The
      reveal is a simple one-time IntersectionObserver trigger (like the
      dev-slide reveal above) rather than a scroll-linked calculation, since
      nothing here needs to be reversible or track scroll position precisely --
@@ -975,11 +981,25 @@
      (pure CSS, always running) plus a staggered fade/rise-in of the eyebrow,
      heading (with a gold underline that draws in), subcopy, each form field,
      and the submit button. ---------- */
-  .interest-section{
+  .interest-scroll-wrap{
     position:relative;
-    padding:140px 24px 160px;
+    height:220vh;
+    height:220dvh;
+  }
+  .interest-section{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100vh;
+    height:100dvh;
+    z-index:20;
+    padding:120px 24px 100px;
     background:#0c0b0a;
-    overflow:hidden;
+    overflow-y:auto;
+    overflow-x:hidden;
+    transform:translate3d(0,100%,0);
+    will-change:transform;
   }
   .interest-glow{
     position:absolute;
@@ -993,19 +1013,16 @@
     0%{ transform:translate(0,0) scale(1); }
     100%{ transform:translate(-3%,2%) scale(1.08); }
   }
-  .interest-grid{
+  .interest-inner{
     position:relative;
     z-index:1;
-    max-width:1120px;
+    max-width:640px;
+    width:100%;
     margin:0 auto;
-    display:grid;
-    grid-template-columns:1.05fr 0.95fr;
-    gap:80px;
-    align-items:start;
-    text-align:left;
   }
-  .interest-info{
-    padding-top:6px;
+  .interest-intro{
+    text-align:center;
+    margin:0 0 44px;
   }
   .interest-eyebrow{
     font-family:'Jost', sans-serif;
@@ -1013,7 +1030,7 @@
     letter-spacing:0.2em;
     text-transform:uppercase;
     color:var(--gold-1);
-    margin:0 0 18px;
+    margin:0 0 16px;
     opacity:0;
     transform:translateY(16px);
     transition:opacity 0.7s ease, transform 0.7s ease;
@@ -1023,10 +1040,10 @@
     display:inline-block;
     font-family:'Jost', sans-serif;
     font-weight:300;
-    font-size:44px;
+    font-size:40px;
     letter-spacing:0.02em;
     color:#f5ecd8;
-    margin:0 0 26px;
+    margin:0 0 22px;
     opacity:0;
     transform:translateY(22px);
     transition:opacity 0.8s cubic-bezier(.22,.9,.34,1) 0.08s, transform 0.8s cubic-bezier(.22,.9,.34,1) 0.08s;
@@ -1034,20 +1051,21 @@
   .interest-heading::after{
     content:"";
     position:absolute;
-    left:0;
-    bottom:-14px;
+    left:50%;
+    bottom:-13px;
     width:0;
     height:2px;
-    background:linear-gradient(90deg, var(--gold-1), transparent);
+    background:linear-gradient(90deg, transparent, var(--gold-1), transparent);
+    transform:translateX(-50%);
     transition:width 1s cubic-bezier(.22,.9,.34,1) 0.5s;
   }
   .interest-sub{
     font-family:'Jost', sans-serif;
     font-weight:300;
-    font-size:16px;
-    line-height:1.75;
+    font-size:15px;
+    line-height:1.65;
     color:rgba(245,236,216,0.68);
-    margin:0 0 44px;
+    margin:0 auto;
     max-width:440px;
     opacity:0;
     transform:translateY(18px);
@@ -1058,18 +1076,26 @@
   .interest-section.in-view .interest-heading::after{ width:56px; }
   .interest-section.in-view .interest-sub{ opacity:1; transform:translateY(0); }
 
+  .interest-info{
+    margin-top:56px;
+    padding-top:44px;
+    border-top:1px solid rgba(255,255,255,0.1);
+  }
   .reach-list{
     list-style:none;
-    margin:0;
+    margin:0 auto;
     padding:0;
+    max-width:460px;
     display:flex;
     flex-direction:column;
-    gap:28px;
+    align-items:stretch;
+    gap:22px;
   }
   .reach-item{
     display:flex;
     align-items:flex-start;
-    gap:18px;
+    gap:16px;
+    text-align:left;
     opacity:0;
     transform:translateY(20px);
     transition:opacity 0.7s cubic-bezier(.22,.9,.34,1), transform 0.7s cubic-bezier(.22,.9,.34,1);
@@ -1077,8 +1103,8 @@
   .interest-section.in-view .reach-item{ opacity:1; transform:translateY(0); }
   .reach-icon{
     flex:none;
-    width:42px;
-    height:42px;
+    width:40px;
+    height:40px;
     border-radius:50%;
     border:1px solid rgba(215,181,110,0.4);
     display:flex;
@@ -1086,20 +1112,20 @@
     justify-content:center;
     color:var(--gold-1);
   }
-  .reach-icon svg{ width:18px; height:18px; }
+  .reach-icon svg{ width:17px; height:17px; }
   .reach-label{
     font-family:'Jost', sans-serif;
     font-size:11px;
     letter-spacing:0.14em;
     text-transform:uppercase;
     color:rgba(245,236,216,0.55);
-    margin:0 0 6px;
+    margin:0 0 5px;
   }
   .reach-value{
     font-family:'Jost', sans-serif;
     font-weight:300;
     font-size:15px;
-    line-height:1.55;
+    line-height:1.5;
     color:#f5ecd8;
     margin:0;
   }
@@ -1117,10 +1143,10 @@
   .form-row{
     display:grid;
     grid-template-columns:1fr 1fr;
-    gap:20px;
+    gap:16px;
   }
   .form-field{
-    margin-bottom:20px;
+    margin-bottom:16px;
     opacity:0;
     transform:translateY(24px);
     transition:opacity 0.7s cubic-bezier(.22,.9,.34,1), transform 0.7s cubic-bezier(.22,.9,.34,1);
@@ -1134,22 +1160,22 @@
     letter-spacing:0.12em;
     text-transform:uppercase;
     color:rgba(245,236,216,0.6);
-    margin-bottom:9px;
+    margin-bottom:7px;
   }
   .form-field input,
   .form-field select,
   .form-field textarea{
     width:100%;
     font-family:'Jost', sans-serif;
-    font-size:15px;
+    font-size:14px;
     color:#f5ecd8;
     background:rgba(245,236,216,0.05);
     border:1px solid rgba(245,236,216,0.22);
     border-radius:2px;
-    padding:13px 14px;
+    padding:11px 13px;
     transition:border-color 0.3s ease, background 0.3s ease;
   }
-  .form-field textarea{ resize:vertical; min-height:96px; }
+  .form-field textarea{ resize:vertical; min-height:56px; }
   .form-field input:focus,
   .form-field select:focus,
   .form-field textarea:focus{
@@ -1161,8 +1187,10 @@
   .form-field select option{ background:#1a1815; color:#f5ecd8; }
 
   .interest-submit{
-    display:inline-flex;
+    display:flex;
+    width:100%;
     align-items:center;
+    justify-content:center;
     gap:10px;
     font-family:'Jost', sans-serif;
     font-size:12px;
@@ -1173,7 +1201,7 @@
     background-size:200% 100%;
     background-position:0% 0%;
     border:none;
-    padding:16px 34px;
+    padding:14px 24px;
     border-radius:2px;
     cursor:pointer;
     opacity:0;
@@ -1182,31 +1210,24 @@
   }
   .interest-section.in-view .interest-submit{ opacity:1; transform:translateY(0); }
   .interest-submit:hover{ background-position:100% 0%; }
-  .interest-submit svg{ width:16px; height:16px; transition:transform 0.3s ease; }
+  .interest-submit svg{ width:15px; height:15px; transition:transform 0.3s ease; }
   .interest-submit:hover svg{ transform:translateX(3px); }
 
   .interest-status{
-    margin:16px 0 0;
+    margin:12px 0 0;
+    text-align:center;
     font-family:'Jost', sans-serif;
-    font-size:13px;
+    font-size:12px;
     color:var(--gold-3);
-    min-height:18px;
+    min-height:16px;
   }
 
-  @media (max-width:900px){
-    .interest-grid{
-      grid-template-columns:1fr;
-      gap:56px;
-    }
-    .interest-info{
-      order:-1;
-    }
-    .interest-sub{ max-width:none; }
-  }
   @media (max-width:720px){
-    .interest-section{ padding:100px 20px 120px; }
-    .interest-heading{ font-size:32px; }
-    .form-row{ grid-template-columns:1fr; }
+    .interest-section{ padding:100px 20px 80px; }
+    .interest-heading{ font-size:28px; }
+    .interest-intro{ margin-bottom:32px; }
+    .interest-info{ margin-top:40px; padding-top:32px; }
+    .form-row{ grid-template-columns:1fr; gap:0; }
   }
 
   /* ---------- Footer: minimalistic continuation of the Express Your Interest
@@ -1576,9 +1597,15 @@
     </section>
   </div>
 
+  <div class="interest-scroll-wrap" id="interestScrollWrap">
   <section class="interest-section" id="contact">
     <div class="interest-glow"></div>
-    <div class="interest-grid">
+    <div class="interest-inner">
+      <div class="interest-intro">
+        <p class="interest-eyebrow">Get In Touch</p>
+        <h2 class="interest-heading">Express Your Interest</h2>
+        <p class="interest-sub">Have a question or need assistance? Our team is here to help &mdash; reach out via phone, email, or the form and we&rsquo;ll be in touch shortly.</p>
+      </div>
       <form class="interest-form" id="interestForm">
         <div class="form-row">
           <div class="form-field" style="transition-delay:0.22s">
@@ -1607,7 +1634,7 @@
         </div>
         <div class="form-field form-field--full" style="transition-delay:0.46s">
           <label for="ifMessage">Message</label>
-          <textarea id="ifMessage" name="message" rows="4" placeholder="Tell us a little about what you&#39;re looking for..."></textarea>
+          <textarea id="ifMessage" name="message" rows="2" placeholder="Tell us a little about what you&#39;re looking for..."></textarea>
         </div>
         <button type="submit" class="interest-submit">
           <span>Submit Request</span>
@@ -1616,9 +1643,6 @@
         <p class="interest-status" id="interestStatus" aria-live="polite"></p>
       </form>
       <div class="interest-info">
-        <p class="interest-eyebrow">Get In Touch</p>
-        <h2 class="interest-heading">Express Your Interest</h2>
-        <p class="interest-sub">Have a question or need assistance? Our team is here to help &mdash; reach out via phone, email, or the form and we&rsquo;ll be in touch shortly.</p>
         <ul class="reach-list">
           <li class="reach-item" style="transition-delay:0.58s">
             <span class="reach-icon">
@@ -1651,6 +1675,7 @@
       </div>
     </div>
   </section>
+  </div>
 
   <footer class="site-footer">
     <div class="footer-panel">
@@ -2499,6 +2524,60 @@
     });
   }
 } catch(e){ console.error('AFM interest form error:', e); } })();
+
+// ---------- Express Your Interest: pinned cover-in / exit-fade ----------
+// Same technique as the Bonito/Township photo frame further up the page:
+// the section is position:fixed and starts translated fully below the
+// viewport; as the user scrolls through its own oversized wrapper it slides
+// up to cover whatever's behind (the Chairman section), holds there fully
+// pinned for the middle stretch of the scroll (giving room to actually read
+// and fill in the form), then fades out toward the end of the wrapper so the
+// footer underneath becomes reachable. Geometry is recomputed from
+// getBoundingClientRect() on every scroll frame rather than cached once --
+// the side-scroll fix earlier in this file found that caching these values
+// goes stale if the page reflows after first paint (webfont swap, etc.), so
+// every scroll-linked section since recomputes live instead of caching.
+(function(){ try {
+  var wrap = document.getElementById('interestScrollWrap');
+  var section = document.getElementById('contact');
+  if (!wrap || !section) return;
+
+  var COVER_END = 0.22;   // fraction of the wrap's scroll range where the slide-up finishes
+  var EXIT_START = 0.78;  // fraction where the fade-out toward the footer begins
+
+  function clamp01(v){ return Math.max(0, Math.min(1, v)); }
+  function easeOutCubic(t){ return 1 - Math.pow(1 - t, 3); }
+  function easeInCubic(t){ return t * t * t; }
+
+  var ticking = false;
+  function update(){
+    ticking = false;
+    var scrollY = window.scrollY || window.pageYOffset;
+    var vh = window.innerHeight;
+    var wrapTop = wrap.getBoundingClientRect().top + scrollY;
+    var scrollable = Math.max(wrap.offsetHeight - vh, 1);
+    var progress = clamp01((scrollY - wrapTop) / scrollable);
+
+    var coverT = clamp01(progress / COVER_END);
+    var coverEased = easeOutCubic(coverT);
+    var translateY = (1 - coverEased) * 100;
+    section.style.transform = 'translate3d(0,' + translateY + '%,0)';
+
+    var exitDenom = Math.max(1 - EXIT_START, 0.0001);
+    var exitT = clamp01((progress - EXIT_START) / exitDenom);
+    var exitEased = easeInCubic(exitT);
+    section.style.opacity = String(1 - exitEased);
+    section.style.visibility = exitT >= 1 ? 'hidden' : 'visible';
+    section.style.pointerEvents = exitT >= 1 ? 'none' : 'auto';
+  }
+  function onScroll(){
+    if (!ticking){ ticking = true; requestAnimationFrame(update); }
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  window.addEventListener('orientationchange', onScroll);
+  update();
+} catch(e){ console.error('AFM interest cover error:', e); } })();
 
 // ---------- Footer year ----------
 (function(){ try {
