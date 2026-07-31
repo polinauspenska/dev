@@ -1039,8 +1039,21 @@
      dev-slide reveal above) rather than a scroll-linked calculation, since
      nothing here needs to be reversible or track scroll position precisely --
      it just needs to look good the first time it enters view. ---------- */
+  /* Chairman and this section now both use plain position:sticky (no JS,
+     no canvas) for the handoff: Chairman sticks first, then as the page
+     keeps scrolling this section's own natural top-of-page position
+     reaches top:0 and IT sticks too, its opaque background sliding up and
+     over Chairman -- two sticky siblings stacking is a native, well-worn
+     CSS pattern and needs nothing more than this. It stays stuck for
+     exactly its own content height before naturally releasing into the
+     footer, no extra scroll-height wrapper required. Desktop only --
+     mobile turns this back into a plain relative section (its own -3vh
+     negative-margin overlap already exists there, no stacking needed on
+     top of it), consistent with keeping mobile's scroll-linked effects to
+     the two true "mask" reveals. */
   .interest-section{
-    position:relative;
+    position:sticky;
+    top:0;
     margin-top:-16vh;
     padding:130px 24px 64px;
     background:#f3f2f2;
@@ -1056,21 +1069,6 @@
     z-index:0;
   }
   .interest-glow.active{ opacity:1; }
-  /* Chairman -> Interest handoff: a full-width band of gold square grains
-     (same fillRect "pixel" technique as the preloader's sand-fill icon)
-     that assembles progressively as the user scrolls through the boundary
-     between the two sections -- scroll-scrubbed, not a one-shot timer, so
-     it plays forward and reverses in lockstep with scroll direction. See
-     the Chairman handoff IIFE further down. Desktop only (kept out of the
-     mobile "masks only" scroll-animation budget). */
-  .chairman-handoff-canvas{
-    position:absolute;
-    top:0; left:0;
-    width:100%;
-    height:240px;
-    z-index:1;
-    pointer-events:none;
-  }
   .interest-inner{
     position:relative;
     z-index:1;
@@ -1302,6 +1300,9 @@
 
   @media (max-width:720px){
     .interest-section{
+      /* Sticky-stacking is a desktop-only flourish -- back to a plain
+         relative section here, same as before. */
+      position:relative;
       /* Was -8vh -- on mobile that let this section's layered top edge
          creep up far enough to start covering the tail of the Chairman
          quote (its name/title line) before the reader had a chance to see
@@ -1310,11 +1311,10 @@
       margin-top:-3vh;
       padding:calc(var(--header-h) + 20px) 20px 48px;
     }
-    /* The scroll-scrubbed handoff canvas and the 2-column desktop layout
-       (form + right-side Reach Us sidebar) are both desktop flourishes --
-       mobile reverts to the original single, stacked column, keeping in
-       line with the "masks only" rule for mobile scroll animation. */
-    .chairman-handoff-canvas{ display:none; }
+    /* The 2-column desktop layout (form + right-side Reach Us sidebar) is
+       a desktop flourish -- mobile reverts to the original single,
+       stacked column, keeping in line with the "masks only" rule for
+       mobile scroll animation. */
     .interest-inner{ max-width:640px; }
     .interest-layout{ display:block; }
     .interest-heading{ font-size:24px; }
@@ -1719,7 +1719,6 @@
 
   <section class="interest-section" id="contact">
     <div class="interest-glow"></div>
-    <canvas class="chairman-handoff-canvas" id="chairmanHandoffCanvas"></canvas>
     <div class="interest-inner">
       <div class="interest-intro">
         <p class="interest-eyebrow">Get In Touch</p>
@@ -2692,115 +2691,6 @@
     hideTimer = setTimeout(function(){ glow.classList.remove('active'); }, 400);
   });
 } catch(e){ console.error('AFM interest glow error:', e); } })();
-
-// ---------- Chairman -> Interest handoff: scroll-scrubbed pixel dissolve ----------
-// The moment Chairman hands off to the Interest section gets its own set
-// piece: a full-width band of gold square grains (the exact fillRect
-// "pixel" technique the preloader's sand-fill icon uses) that assembles
-// as the user scrolls through the boundary between the two sections.
-// Unlike the preloader's version this is NOT a fire-and-forget timer --
-// it's scroll-scrubbed like the footer's parallax reveal, using the same
-// live-geometry pattern (progress recomputed from getBoundingClientRect()
-// every frame, never cached): scroll down and the grains assemble in
-// their random order; scroll back up and they recede in exact reverse,
-// perfectly in step with the scrollbar. Desktop only -- see the
-// .chairman-handoff-canvas{display:none} mobile override, keeping mobile's
-// scroll animation budget limited to the hero curtain and Chairman photo
-// mask reveals, per the existing "masks only" rule for mobile.
-(function(){ try {
-  var mobileQuery = window.matchMedia('(max-width:720px)');
-  if (mobileQuery.matches) return;
-
-  var canvas = document.getElementById('chairmanHandoffCanvas');
-  var section = document.querySelector('.interest-section');
-  if (!canvas || !section) return;
-  var ctx = canvas.getContext('2d');
-  if (!ctx) return;
-
-  var COLORS = ['#d7b56e', '#c9a25c', '#e8cd93'];
-  var dpr = window.devicePixelRatio || 1;
-  var points = [];
-  var builtWidth = 0;
-  var builtHeight = 0;
-
-  function clamp01(v){ return Math.max(0, Math.min(1, v)); }
-
-  function build(){
-    var rect = canvas.getBoundingClientRect();
-    var w = rect.width, h = rect.height;
-    if (w < 1 || h < 1) return;
-    canvas.width = Math.max(1, w * dpr);
-    canvas.height = Math.max(1, h * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-    var cell = 16; // coarser pitch than the old strip -- this band covers
-                    // the full viewport width, so a finer grain would mean
-                    // thousands more rects redrawn every scroll frame.
-    points = [];
-    for (var y = 0; y < h; y += cell){
-      for (var x = 0; x < w; x += cell){
-        points.push({
-          x: x + (Math.random()*5 - 2.5),
-          y: y + (Math.random()*5 - 2.5),
-          s: 6 + Math.random()*4,
-          c: COLORS[Math.floor(Math.random()*3)],
-          a: 0.5 + Math.random()*0.5,
-          r: Math.random()
-        });
-      }
-    }
-    builtWidth = w;
-    builtHeight = h;
-  }
-
-  function draw(progress){
-    var rect = canvas.getBoundingClientRect();
-    if (Math.abs(rect.width - builtWidth) > 1 || Math.abs(rect.height - builtHeight) > 1){
-      build();
-    }
-    ctx.clearRect(0, 0, rect.width, rect.height);
-    var settleWindow = 0.05;
-    for (var i=0; i<points.length; i++){
-      var p = points[i];
-      if (p.r <= progress){
-        var age = progress - p.r;
-        var oy = 0, scale = 1;
-        if (age < settleWindow){
-          var t = age/settleWindow;
-          var eased = 1 - Math.pow(1-t, 2);
-          oy = -(1-eased) * 12;
-          scale = 0.45 + eased*0.55;
-        }
-        var s2 = p.s * scale;
-        ctx.globalAlpha = p.a;
-        ctx.fillStyle = p.c;
-        ctx.fillRect(p.x - s2/2, p.y + oy - s2/2, s2, s2);
-      }
-    }
-    ctx.globalAlpha = 1;
-  }
-
-  var RANGE_VH = 60; // the "act" this dissolve plays out over, in % of vh
-  var ticking = false;
-
-  function update(){
-    ticking = false;
-    var vh = window.innerHeight;
-    var top = section.getBoundingClientRect().top;
-    var scrollable = Math.max((RANGE_VH/100) * vh, 1);
-    var progress = clamp01((vh - top) / scrollable);
-    draw(progress);
-  }
-  function onScroll(){
-    if (!ticking){ ticking = true; requestAnimationFrame(update); }
-  }
-
-  build();
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll);
-  window.addEventListener('orientationchange', onScroll);
-  update();
-} catch(e){ console.error('AFM chairman handoff error:', e); } })();
 
 // ---------- Footer: one-time reveal ----------
 // Same pattern as the Interest section above (and the dev-slide reveal
