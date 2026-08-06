@@ -1053,13 +1053,23 @@
      scroll-wrap below reserves extra scroll distance (min-height, same
      idea as Chairman's own 180vh wrapper) so the section stays fully
      pinned and readable for a proper stretch before releasing into the
-     footer. Desktop only -- mobile turns this back into a plain relative
-     section (its own -3vh negative-margin overlap already exists there,
-     no stacking needed on top of it), consistent with keeping mobile's
-     scroll-linked effects to the two true "mask" reveals. */
+     footer -- but not so much extra that it turns into a long dead
+     stretch where scrolling produces no visible change (that read as
+     "stuck"/unresponsive). 140vh is enough headroom past a typical 100vh
+     viewport for the fix above without overdoing it. Desktop only --
+     mobile turns this back into a plain relative section (its own -3vh
+     negative-margin overlap already exists there, no stacking needed on
+     top of it), consistent with keeping mobile's scroll-linked effects to
+     the two true "mask" reveals. */
   .interest-scroll-wrap{
     position:relative;
-    min-height:175vh;
+    min-height:140vh;
+    /* The sticky section inside doesn't fill this whole reserved-height
+       wrapper (it's only as tall as its own content) -- without a
+       matching background here, the page's own near-black background
+       showed through beneath it while it was pinned. Same ivory as the
+       form itself so that gap reads as part of the form, not a hole. */
+    background:#f3f2f2;
   }
   .interest-section{
     position:sticky;
@@ -1357,19 +1367,16 @@
   /* ---------- Footer: simple single-row layout matching the live site --
      nav links (About / Projects / News / Contact Us) and social icons on
      one row, a divider, then a centered copyright line. No logo, no
-     columns, no signup form -- kept intentionally minimal. The background
-     is a warm gold/bronze gradient (no black) rather than the near-black
-     used elsewhere on the page, so the footer reads as its own distinct,
-     richly-colored close rather than fading to the same dark tone as the
-     Chairman/hero sections. Reveals are one-time IntersectionObserver
-     triggers, same pattern as the rest of the page, plus the scroll-linked
-     parallax "uncover" reveal on the whole block (see the Footer parallax
-     IIFE further down). ---------- */
+     columns, no signup form -- kept intentionally minimal. Solid espresso
+     brown background (distinct from the pure-black used elsewhere on the
+     page), so the footer reads as its own warm, richly-colored close.
+     Reveals are one-time IntersectionObserver triggers, same pattern as
+     the rest of the page, plus the scroll-linked parallax "uncover"
+     reveal on the whole block (see the Footer parallax IIFE further
+     down). ---------- */
   .site-footer{
     position:relative;
-    background:
-      linear-gradient(rgba(255,255,255,0.05), rgba(255,255,255,0.05)),
-      linear-gradient(150deg, #3c2d17 0%, #5c451f 32%, #8a6b30 62%, #b0883f 100%);
+    background:#120b07;
     padding:56px 40px 0;
     overflow:hidden;
     text-align:left;
@@ -2488,13 +2495,25 @@
     '<path d="M 88.851562 129.5 L 150.613281 23.445312 L 162.789062 44.621094 L 120.261719 117.679688 C 127.320312 129.5 139.851562 151.382812 147.4375 164.265625 L 127.320312 198.675781 C 115.496094 178.558594 98.910156 149.792969 87.96875 130.734375 Z M 88.851562 129.5 "/>' +
     '<path d="M 212.378906 130.558594 L 200.203125 109.03125 C 179.378906 144.855469 158.734375 180.675781 137.734375 216.320312 L 170.027344 271.910156 L 210.082031 271.910156 L 170.203125 203.441406 Z M 212.378906 130.558594 "/>';
 
-  function buildMaskURI(tx, ty, scale){
-    var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">' +
-      '<g fill="#fff" transform="translate(' + tx + ',' + ty + ') scale(' + scale + ')">' +
-      '<g transform="translate(0.086,-17.445)">' + MASK_PATHS + '</g>' +
-      '</g></svg>';
-    return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
-  }
+  // The old version of this rebuilt a brand-new SVG string (and re-encoded
+  // it as a data URI, forcing the browser to reparse/rerasterize a fresh
+  // mask image) on every single scroll frame -- noticeably heavier than a
+  // plain style write, and the likely source of scroll jank on this
+  // section specifically. The mask's actual SHAPE never changes, only its
+  // scale/position -- so it's now built ONCE as a static data URI at its
+  // native size, and the per-frame animation drives plain mask-size/
+  // mask-position values instead, which is just cheap numeric style
+  // writes with no image re-decode.
+  var BASE_MASK_URI = (function(){
+    var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + HULL_W + '" height="' + HULL_H + '" viewBox="0 0 ' + HULL_W + ' ' + HULL_H + '">' +
+      '<g fill="#fff" transform="translate(0.086,-17.445)">' + MASK_PATHS + '</g>' +
+      '</svg>';
+    return 'url("data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg) + '")';
+  })();
+  photo.style.webkitMaskImage = BASE_MASK_URI;
+  photo.style.maskImage = BASE_MASK_URI;
+  photo.style.webkitMaskRepeat = 'no-repeat';
+  photo.style.maskRepeat = 'no-repeat';
 
   // Geometry (viewport size + wrap height) is read live every frame instead
   // of being cached at load and refreshed only on resize/orientationchange.
@@ -2538,9 +2557,15 @@
     var cx = vw * 0.5, cy = vh * 0.5;
     var tx = cx - pivotX * scale;
     var ty = cy - pivotY * scale;
-    var maskURI = 'url("' + buildMaskURI(tx, ty, scale) + '")';
-    photo.style.webkitMaskImage = maskURI;
-    photo.style.maskImage = maskURI;
+    // Same effect as the old translate(tx,ty) scale(scale) group transform,
+    // but as plain mask-size/mask-position numbers against the one static
+    // mask image set up above -- no re-encoding, no re-decoding, every frame.
+    var sizeVal = (scale * HULL_W) + 'px ' + (scale * HULL_H) + 'px';
+    var posVal = tx + 'px ' + ty + 'px';
+    photo.style.webkitMaskSize = sizeVal;
+    photo.style.maskSize = sizeVal;
+    photo.style.webkitMaskPosition = posVal;
+    photo.style.maskPosition = posVal;
 
     if (quoteCard){
       var tQuote = clamp01((progress - QUOTE_START) / (QUOTE_END - QUOTE_START));
@@ -2704,6 +2729,35 @@
     hideTimer = setTimeout(function(){ glow.classList.remove('active'); }, 400);
   });
 } catch(e){ console.error('AFM interest glow error:', e); } })();
+
+// ---------- Interest section: size the sticky wrapper to actual content ----------
+// .interest-scroll-wrap reserves extra scroll distance so .interest-section
+// stays pinned instead of the footer sliding over it right away. The CSS
+// min-height (140vh) is only a guess/fallback -- it doesn't track the
+// section's real content height, so on a tall screen where the form is
+// short relative to the viewport it reserves way more room than the
+// content needs, leaving a big empty gray gap below the form before the
+// footer starts (that's the "white stripe" -- not a rendering bug, just
+// unused reserved space with nothing in it). Measuring the section's own
+// real height and adding a fixed pinned-scroll budget on top keeps that
+// gap small and consistent on any screen, while still leaving enough
+// scroll distance for the section to feel properly pinned rather than
+// releasing the instant it appears.
+(function(){ try {
+  var wrap = document.getElementById('interestScrollWrap');
+  var section = document.querySelector('.interest-section');
+  if (!wrap || !section) return;
+  var mq = window.matchMedia('(min-width:721px)');
+  var PIN_BUDGET = 260; // px of extra scroll while the section stays pinned
+  function size(){
+    if (!mq.matches){ wrap.style.minHeight = ''; return; }
+    var h = section.getBoundingClientRect().height;
+    wrap.style.minHeight = Math.round(h + PIN_BUDGET) + 'px';
+  }
+  size();
+  window.addEventListener('resize', size);
+  window.addEventListener('load', size);
+} catch(e){ console.error('AFM interest wrap sizing error:', e); } })();
 
 // ---------- Footer: one-time reveal ----------
 // Same pattern as the Interest section above (and the dev-slide reveal
