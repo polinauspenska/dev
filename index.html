@@ -1044,13 +1044,23 @@
      keeps scrolling this section's own natural top-of-page position
      reaches top:0 and IT sticks too, its opaque background sliding up and
      over Chairman -- two sticky siblings stacking is a native, well-worn
-     CSS pattern and needs nothing more than this. It stays stuck for
-     exactly its own content height before naturally releasing into the
-     footer, no extra scroll-height wrapper required. Desktop only --
-     mobile turns this back into a plain relative section (its own -3vh
-     negative-margin overlap already exists there, no stacking needed on
-     top of it), consistent with keeping mobile's scroll-linked effects to
-     the two true "mask" reveals. */
+     CSS pattern.
+     A sticky element only stays pinned for as long as its own containing
+     box has room left to scroll through -- with no wrapper, that box was
+     just the section's own (fairly short) content height, so the footer
+     right behind it caught up and started sliding over the still-pinned
+     form almost immediately, covering the submit button. .interest-
+     scroll-wrap below reserves extra scroll distance (min-height, same
+     idea as Chairman's own 180vh wrapper) so the section stays fully
+     pinned and readable for a proper stretch before releasing into the
+     footer. Desktop only -- mobile turns this back into a plain relative
+     section (its own -3vh negative-margin overlap already exists there,
+     no stacking needed on top of it), consistent with keeping mobile's
+     scroll-linked effects to the two true "mask" reveals. */
+  .interest-scroll-wrap{
+    position:relative;
+    min-height:175vh;
+  }
   .interest-section{
     position:sticky;
     top:0;
@@ -1299,6 +1309,7 @@
   }
 
   @media (max-width:720px){
+    .interest-scroll-wrap{ min-height:0; }
     .interest-section{
       /* Sticky-stacking is a desktop-only flourish -- back to a plain
          relative section here, same as before. */
@@ -1717,6 +1728,7 @@
     </section>
   </div>
 
+  <div class="interest-scroll-wrap" id="interestScrollWrap">
   <section class="interest-section" id="contact">
     <div class="interest-glow"></div>
     <div class="interest-inner">
@@ -1796,6 +1808,7 @@
       </div>
     </div>
   </section>
+  </div>
 
   <footer class="site-footer">
    <div class="footer-window" id="footerWindow">
