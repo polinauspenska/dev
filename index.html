@@ -69,6 +69,13 @@
     font-family:'Jost', 'Helvetica Neue', Arial, sans-serif;
     overflow-x:hidden;
   }
+  /* ---------- Cross-page transition (leaving only) ----------
+     The homepage's own entrance is the sand-fill preloader -- no separate
+     fade-in needed (and body starting at opacity:0 by default would hide
+     the preloader itself, since it's a child of body). This only adds a
+     brief fade-OUT before navigating to another page, matching the
+     fade-in every other page does on arrival (see build_subpages.py). */
+  body.mag-leaving{ opacity:0; transition:opacity 0.26s ease; }
 
   /* ---------- Preloader ---------- */
   .preloader-overlay{
@@ -2843,6 +2850,32 @@
   var yearEl = document.getElementById('footerYear');
   if (yearEl) yearEl.textContent = String(new Date().getFullYear());
 } catch(e){ console.error('AFM footer error:', e); } })();
+
+// ---------- Cross-page transition: fade out before leaving ----------
+// Mirrors the interceptor on about/projects/contact/bonito/township --
+// same narrow scope (same-page anchors, mailto:/tel:, modified clicks,
+// target="_blank" and off-site links are all left untouched). This page
+// has no matching fade-IN (see the CSS note above), just the fade-out.
+(function(){ try {
+  document.addEventListener('click', function(e){
+    if (e.defaultPrevented || e.button !== 0) return;
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var link = e.target.closest('a');
+    if (!link) return;
+    var href = link.getAttribute('href');
+    if (!href || href.charAt(0) === '#') return;
+    if (href.indexOf('mailto:') === 0 || href.indexOf('tel:') === 0) return;
+    if (link.target && link.target !== '_self') return;
+    if (link.hasAttribute('download')) return;
+    var url;
+    try { url = new URL(href, window.location.href); } catch(err){ return; }
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
+    if (url.origin !== window.location.origin) return;
+    e.preventDefault();
+    document.body.classList.add('mag-leaving');
+    setTimeout(function(){ window.location.href = url.href; }, 260);
+  });
+} catch(e){ console.error('AFM transition error:', e); } })();
 </script>
 </body>
 </html>
