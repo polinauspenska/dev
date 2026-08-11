@@ -30,7 +30,7 @@
     --gold-1:#d7b56e;
     --gold-2:#c9a25c;
     --gold-3:#e8cd93;
-    --bg:#0c0b0a;
+    --bg:#120807;
     --header-h:84px;
   }
   *{box-sizing:border-box;}
@@ -66,11 +66,11 @@
     align-items:center;
     justify-content:space-between;
     padding:16px 28px;
-    background:rgba(12,11,10,0);
+    background:rgba(18,8,7,0);
     transition:background 0.4s ease;
   }
   .site-header.visible{
-    background:rgba(12,11,10,0.72);
+    background:rgba(18,8,7,0.72);
     backdrop-filter:blur(10px);
     -webkit-backdrop-filter:blur(10px);
   }
@@ -114,7 +114,7 @@
   .nav-photo{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center; }
   .nav-scrim{
     position:absolute; inset:0;
-    background:linear-gradient(90deg, rgba(18,17,16,0.94) 0%, rgba(18,17,16,0.88) 40%, rgba(18,17,16,0.42) 62%, rgba(18,17,16,0) 80%);
+    background:linear-gradient(90deg, rgba(18,8,7,0.94) 0%, rgba(18,8,7,0.88) 40%, rgba(18,8,7,0.42) 62%, rgba(18,8,7,0) 80%);
   }
   .nav-content{
     position:relative; z-index:2; height:100%;
@@ -147,7 +147,7 @@
   .nav-social a svg{ width:20px; height:20px; }
   .nav-social a:hover{ color:var(--gold-1); }
   @media (max-width:820px){
-    .nav-scrim{ background:rgba(10,9,8,0.8); }
+    .nav-scrim{ background:rgba(18,8,7,0.8); }
     .nav-photo{ filter:blur(20px); transform:scale(1.1); }
     .nav-content{ padding:0 30px; max-width:none; }
     .nav-close{ top:26px; left:30px; }
@@ -178,7 +178,7 @@
   }
 
   /* ---------- Footer -- verbatim from the homepage ---------- */
-  .site-footer{ position:relative; background:#120b07; padding:56px 40px 0; overflow:hidden; text-align:left; }
+  .site-footer{ position:relative; background:#120807; padding:56px 40px 0; overflow:hidden; text-align:left; }
   .footer-window{ position:relative; overflow:hidden; }
   .footer-reveal{ position:relative; z-index:1; transform:translateY(-50%); will-change:transform; }
   .footer-row{ position:relative; z-index:1; max-width:1160px; margin:0 auto; display:flex; align-items:center; justify-content:flex-end; flex-wrap:wrap; gap:24px; }
@@ -233,7 +233,7 @@
      narrower screens, so this pins the crop to where he actually is. */
   .mag-hero-photo--video{ object-position:25% 32%; }
   @keyframes magHeroZoom{ from{ transform:scale(1.12); } to{ transform:scale(1); } }
-  .mag-hero-overlay{ position:absolute; inset:0; background:linear-gradient(180deg, rgba(10,9,8,0.3) 0%, rgba(10,9,8,0.42) 55%, rgba(10,9,8,0.72) 100%); }
+  .mag-hero-overlay{ position:absolute; inset:0; background:linear-gradient(180deg, rgba(18,8,7,0.3) 0%, rgba(18,8,7,0.42) 55%, rgba(18,8,7,0.72) 100%); }
   .mag-hero-content{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:0 24px; }
   .mag-hero-eyebrow{
     font-family:'Jost', sans-serif; font-size:11px; font-weight:400; letter-spacing:0.3em; text-transform:uppercase; color:var(--gold-1);
@@ -337,17 +337,17 @@
 
   /* ---------- Interior direction gallery ---------- */
   .interior-grid{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:2px; max-width:1200px; margin:0 auto; }
-  .interior-item{ position:relative; overflow:hidden; background:#0e0b08; }
+  .interior-item{ position:relative; overflow:hidden; background:#120807; }
   .interior-item img{ width:100%; height:340px; object-fit:cover; display:block; transition:transform 0.6s cubic-bezier(.22,.9,.34,1); }
   .interior-item:hover img{ transform:scale(1.045); }
-  .interior-item-label{ position:absolute; left:0; right:0; bottom:0; padding:16px 18px; background:linear-gradient(to top, rgba(10,7,5,0.65), transparent); }
+  .interior-item-label{ position:absolute; left:0; right:0; bottom:0; padding:16px 18px; background:linear-gradient(to top, rgba(18,8,7,0.65), transparent); }
   .interior-item-label span{ font-family:'Jost', sans-serif; font-size:10.5px; font-weight:400; letter-spacing:0.14em; text-transform:uppercase; color:#f5ecd8; }
   @media (max-width:900px){ .interior-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); } .interior-item img{ height:300px; } }
   @media (max-width:560px){ .interior-grid{ grid-template-columns:1fr; } }
 
   /* ---------- Dark (espresso) section variant of the next-eyebrow/heading
      header pattern, for a closing dark moment on long editorial pages. ---------- */
-  .mag-section--espresso{ background:#120b07; }
+  .mag-section--espresso{ background:#120807; }
   .mag-section--espresso .next-eyebrow{ color:var(--gold-2); }
   .mag-section--espresso .next-heading{ color:#ffffff; }
 
@@ -372,7 +372,7 @@
   }
 
   /* ---------- Two-up photo grid with shared caption ---------- */
-  .photo-duo{ display:grid; grid-template-columns:1fr 1fr; gap:2px; background:#0e0b08; }
+  .photo-duo{ display:grid; grid-template-columns:1fr 1fr; gap:2px; background:#120807; }
   .photo-duo img{ display:block; width:100%; height:52vh; min-height:300px; max-height:520px; object-fit:cover; }
   @media (max-width:720px){
     .photo-duo{ grid-template-columns:1fr; }
@@ -406,7 +406,7 @@
   .spread-media{ position:relative; overflow:hidden; }
   .spread-media img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
   .spread-card{
-    background:#15130d; color:#f5ecd8;
+    background:#120807; color:#f5ecd8;
     padding:64px 56px;
     display:flex; flex-direction:column; justify-content:center;
   }
@@ -462,11 +462,11 @@
   .spread-card--light .dev-link:hover{ color:var(--gold-2); border-color:var(--gold-2); }
 
   /* ---------- Espresso spread-card variant -- a dark accent moment for
-     editorial pages, tied to this site's own footer/CTA brown (#120b07)
+     editorial pages, tied to this site's own footer/CTA brown (#120807)
      rather than the homepage card's charcoal, so dark and light sections
      alternate down the page instead of everything reading as one long
      white scroll. ---------- */
-  .spread-card--espresso{ background:#120b07; }
+  .spread-card--espresso{ background:#120807; }
   .spread-card--espresso .dev-location{ color:#f5ecd8; }
   .spread-card--espresso .dev-heading{ color:#ffffff; }
   .spread-card--espresso .dev-heading-sub{ color:rgba(245,236,216,0.85); }
@@ -477,7 +477,7 @@
   .spread-card--espresso .dev-stat-label{ color:rgba(245,236,216,0.5); }
 
   /* ---------- CTA banner ---------- */
-  .mag-cta{ background:#120b07; padding:100px 24px; text-align:center; }
+  .mag-cta{ background:#120807; padding:100px 24px; text-align:center; }
   .mag-cta-eyebrow{ font-family:'Jost', sans-serif; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold-1); margin:0 0 16px; }
   .mag-cta-heading{ font-family:'Jost', sans-serif; font-weight:300; font-size:32px; color:#f5ecd8; margin:0 0 20px; max-width:640px; margin-left:auto; margin-right:auto; }
   .mag-cta-sub{ font-family:'Jost', sans-serif; font-size:14px; line-height:1.7; color:rgba(245,236,216,0.65); max-width:520px; margin:0 auto 34px; }

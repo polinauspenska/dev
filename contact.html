@@ -30,7 +30,7 @@
     --gold-1:#d7b56e;
     --gold-2:#c9a25c;
     --gold-3:#e8cd93;
-    --bg:#0c0b0a;
+    --bg:#120807;
     --header-h:84px;
   }
   *{box-sizing:border-box;}
@@ -66,11 +66,11 @@
     align-items:center;
     justify-content:space-between;
     padding:16px 28px;
-    background:rgba(12,11,10,0);
+    background:rgba(18,8,7,0);
     transition:background 0.4s ease;
   }
   .site-header.visible{
-    background:rgba(12,11,10,0.72);
+    background:rgba(18,8,7,0.72);
     backdrop-filter:blur(10px);
     -webkit-backdrop-filter:blur(10px);
   }
@@ -114,7 +114,7 @@
   .nav-photo{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center; }
   .nav-scrim{
     position:absolute; inset:0;
-    background:linear-gradient(90deg, rgba(18,17,16,0.94) 0%, rgba(18,17,16,0.88) 40%, rgba(18,17,16,0.42) 62%, rgba(18,17,16,0) 80%);
+    background:linear-gradient(90deg, rgba(18,8,7,0.94) 0%, rgba(18,8,7,0.88) 40%, rgba(18,8,7,0.42) 62%, rgba(18,8,7,0) 80%);
   }
   .nav-content{
     position:relative; z-index:2; height:100%;
@@ -147,7 +147,7 @@
   .nav-social a svg{ width:20px; height:20px; }
   .nav-social a:hover{ color:var(--gold-1); }
   @media (max-width:820px){
-    .nav-scrim{ background:rgba(10,9,8,0.8); }
+    .nav-scrim{ background:rgba(18,8,7,0.8); }
     .nav-photo{ filter:blur(20px); transform:scale(1.1); }
     .nav-content{ padding:0 30px; max-width:none; }
     .nav-close{ top:26px; left:30px; }
@@ -178,7 +178,7 @@
   }
 
   /* ---------- Footer -- verbatim from the homepage ---------- */
-  .site-footer{ position:relative; background:#120b07; padding:56px 40px 0; overflow:hidden; text-align:left; }
+  .site-footer{ position:relative; background:#120807; padding:56px 40px 0; overflow:hidden; text-align:left; }
   .footer-window{ position:relative; overflow:hidden; }
   .footer-reveal{ position:relative; z-index:1; transform:translateY(-50%); will-change:transform; }
   .footer-row{ position:relative; z-index:1; max-width:1160px; margin:0 auto; display:flex; align-items:center; justify-content:flex-end; flex-wrap:wrap; gap:24px; }
@@ -233,7 +233,7 @@
      narrower screens, so this pins the crop to where he actually is. */
   .mag-hero-photo--video{ object-position:25% 32%; }
   @keyframes magHeroZoom{ from{ transform:scale(1.12); } to{ transform:scale(1); } }
-  .mag-hero-overlay{ position:absolute; inset:0; background:linear-gradient(180deg, rgba(10,9,8,0.3) 0%, rgba(10,9,8,0.42) 55%, rgba(10,9,8,0.72) 100%); }
+  .mag-hero-overlay{ position:absolute; inset:0; background:linear-gradient(180deg, rgba(18,8,7,0.3) 0%, rgba(18,8,7,0.42) 55%, rgba(18,8,7,0.72) 100%); }
   .mag-hero-content{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:0 24px; }
   .mag-hero-eyebrow{
     font-family:'Jost', sans-serif; font-size:11px; font-weight:400; letter-spacing:0.3em; text-transform:uppercase; color:var(--gold-1);
@@ -298,13 +298,98 @@
     .pillars{ grid-template-columns:1fr; gap:40px; }
   }
 
+  /* ---------- Why Ras Al Khaimah (Township page) ---------- */
+  .rak-intro{ max-width:660px; margin:0 auto 48px; text-align:center; }
+  .rak-intro p{ font-family:'Jost', sans-serif; font-weight:normal; font-size:15px; line-height:1.75; color:#3a3a3c; margin:0; }
+  .rak-grid{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); border-top:1px solid rgba(28,23,18,0.1); border-left:1px solid rgba(28,23,18,0.1); max-width:1080px; margin:0 auto; }
+  .rak-card{ padding:36px 34px; border-right:1px solid rgba(28,23,18,0.1); border-bottom:1px solid rgba(28,23,18,0.1); }
+  .rak-icon{ width:24px; height:24px; color:var(--gold-2); margin-bottom:20px; }
+  .rak-card-title{ font-family:'Jost', sans-serif; font-weight:400; font-size:16.5px; letter-spacing:0.01em; color:#1c1712; margin:0 0 10px; }
+  .rak-card-desc{ font-family:'Jost', sans-serif; font-weight:normal; font-size:13px; line-height:1.7; color:rgba(28,23,18,0.6); margin:0; }
+  .rak-disclaimer{ font-family:'Jost', sans-serif; font-size:11px; line-height:1.6; color:rgba(28,23,18,0.4); max-width:1080px; margin:26px auto 0; }
+  @media (max-width:820px){
+    .rak-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+  }
+  @media (max-width:560px){
+    .rak-grid{ grid-template-columns:1fr; }
+  }
+
+  /* ---------- Reusable feature/amenity card grid (any page) ---------- */
+  .feature-grid{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); border-top:1px solid rgba(28,23,18,0.1); border-left:1px solid rgba(28,23,18,0.1); max-width:1080px; margin:0 auto; }
+  .feature-card{ padding:36px 34px; border-right:1px solid rgba(28,23,18,0.1); border-bottom:1px solid rgba(28,23,18,0.1); }
+  .feature-icon{ width:24px; height:24px; color:var(--gold-2); margin-bottom:20px; }
+  .feature-card-title{ font-family:'Jost', sans-serif; font-weight:400; font-size:16.5px; letter-spacing:0.01em; color:#1c1712; margin:0 0 10px; }
+  .feature-card-desc{ font-family:'Jost', sans-serif; font-weight:normal; font-size:13px; line-height:1.7; color:rgba(28,23,18,0.6); margin:0; }
+  @media (max-width:820px){ .feature-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); } }
+  @media (max-width:560px){ .feature-grid{ grid-template-columns:1fr; } }
+  .feature-grid--2col{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+  @media (max-width:560px){ .feature-grid--2col{ grid-template-columns:1fr; } }
+  .villa-card-specs{ font-family:'Jost', sans-serif; font-size:10.5px; font-weight:400; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold-2); margin:0 0 12px; }
+
+  /* ---------- Villa floor-plan blocks (Township page) ---------- */
+  .villa-plan-block{ max-width:1040px; margin:0 auto 72px; }
+  .villa-plan-block:last-child{ margin-bottom:0; }
+  .villa-plan-head{ display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:10px 24px; margin-bottom:22px; padding-bottom:18px; border-bottom:1px solid rgba(28,23,18,0.1); }
+  .villa-plan-title{ font-family:'Jost', sans-serif; font-weight:400; font-size:21px; color:#1c1712; margin:0; }
+  .villa-plan-stats{ font-family:'Jost', sans-serif; font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold-2); }
+  .villa-plan-img{ width:100%; height:auto; display:block; border:1px solid rgba(28,23,18,0.08); }
+  .villa-plan-desc{ font-family:'Jost', sans-serif; font-weight:normal; font-size:13.5px; line-height:1.75; color:rgba(28,23,18,0.62); margin:18px 0 0; max-width:720px; }
+
+  /* ---------- Interior direction gallery ---------- */
+  .interior-grid{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:2px; max-width:1200px; margin:0 auto; }
+  .interior-item{ position:relative; overflow:hidden; background:#120807; }
+  .interior-item img{ width:100%; height:340px; object-fit:cover; display:block; transition:transform 0.6s cubic-bezier(.22,.9,.34,1); }
+  .interior-item:hover img{ transform:scale(1.045); }
+  .interior-item-label{ position:absolute; left:0; right:0; bottom:0; padding:16px 18px; background:linear-gradient(to top, rgba(18,8,7,0.65), transparent); }
+  .interior-item-label span{ font-family:'Jost', sans-serif; font-size:10.5px; font-weight:400; letter-spacing:0.14em; text-transform:uppercase; color:#f5ecd8; }
+  @media (max-width:900px){ .interior-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); } .interior-item img{ height:300px; } }
+  @media (max-width:560px){ .interior-grid{ grid-template-columns:1fr; } }
+
+  /* ---------- Dark (espresso) section variant of the next-eyebrow/heading
+     header pattern, for a closing dark moment on long editorial pages. ---------- */
+  .mag-section--espresso{ background:#120807; }
+  .mag-section--espresso .next-eyebrow{ color:var(--gold-2); }
+  .mag-section--espresso .next-heading{ color:#ffffff; }
+
+  /* ---------- Numbered case-for-investing list (dark section) ---------- */
+  .case-list{ max-width:820px; margin:0 auto; display:flex; flex-direction:column; }
+  .case-item{ display:flex; gap:18px; align-items:flex-start; padding:20px 0; border-bottom:1px solid rgba(245,236,216,0.14); }
+  .case-item:last-child{ border-bottom:none; }
+  .case-num{ font-family:'Jost', sans-serif; font-weight:300; font-size:13px; color:var(--gold-2); flex:none; padding-top:2px; min-width:22px; }
+  .case-text{ font-family:'Jost', sans-serif; font-weight:normal; font-size:14px; line-height:1.75; color:rgba(245,236,216,0.72); margin:0; }
+  .case-text strong{ color:#f5ecd8; font-weight:400; }
+
+  /* ---------- Magazine full-bleed captioned photo ---------- */
+  .mag-photo-full{ background:#f3f2f2; }
+  .mag-photo-full img{ display:block; width:100%; height:74vh; min-height:380px; max-height:720px; object-fit:cover; }
+  .mag-photo-full-cap{ background:#f3f2f2; max-width:1040px; margin:0 auto; padding:40px 24px 64px; }
+  .photo-cap-eyebrow{ font-family:'Jost', sans-serif; font-size:11px; font-weight:400; letter-spacing:0.22em; text-transform:uppercase; color:var(--gold-2); margin:0 0 14px; }
+  .photo-cap-heading{ font-family:'Jost', sans-serif; font-weight:300; font-size:28px; line-height:1.25; color:#1c1712; margin:0 0 14px; max-width:620px; }
+  .photo-cap-desc{ font-family:'Jost', sans-serif; font-weight:normal; font-size:14px; line-height:1.75; color:rgba(28,23,18,0.62); margin:0; max-width:600px; }
+  @media (max-width:720px){
+    .mag-photo-full img{ height:50vh; min-height:280px; }
+    .photo-cap-heading{ font-size:23px; }
+  }
+
+  /* ---------- Two-up photo grid with shared caption ---------- */
+  .photo-duo{ display:grid; grid-template-columns:1fr 1fr; gap:2px; background:#120807; }
+  .photo-duo img{ display:block; width:100%; height:52vh; min-height:300px; max-height:520px; object-fit:cover; }
+  @media (max-width:720px){
+    .photo-duo{ grid-template-columns:1fr; }
+    .photo-duo img{ height:42vh; min-height:240px; }
+  }
+
   /* ---------- Chairman quote block (About page) ---------- */
   .mag-quote-wrap{ display:flex; align-items:center; gap:44px; max-width:900px; margin:0 auto; }
+  .mag-quote-wrap--no-photo{ text-align:center; }
+  .mag-quote-wrap--no-photo .mag-quote-body{ margin:0 auto; }
   .mag-quote-photo{ width:104px; height:104px; border-radius:50%; overflow:hidden; flex:none; border:2px solid var(--gold-1); }
   .mag-quote-photo img{ width:100%; height:100%; object-fit:cover; object-position:center 16%; display:block; }
   .mag-quote-body{ flex:1; min-width:0; }
   .mag-quote-eyebrow{ font-family:'Jost', sans-serif; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold-2); margin:0 0 14px; }
   .mag-quote-text{ font-family:'Jost', sans-serif; font-weight:300; font-size:25px; line-height:1.5; color:#1c1712; margin:0 0 18px; }
+  .mag-quote-text .qw{ color:rgba(28,23,18,0.22); transition:color 0.35s ease; }
+  .mag-quote-text .qw.lit{ color:#1c1712; }
   .mag-quote-name{ font-family:'Jost', sans-serif; font-size:14px; color:#1c1712; margin:0; }
   .mag-quote-title{ font-family:'Jost', sans-serif; font-size:12px; color:rgba(28,23,18,0.55); margin:2px 0 0; }
   @media (max-width:640px){
@@ -321,7 +406,7 @@
   .spread-media{ position:relative; overflow:hidden; }
   .spread-media img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
   .spread-card{
-    background:#15130d; color:#f5ecd8;
+    background:#120807; color:#f5ecd8;
     padding:64px 56px;
     display:flex; flex-direction:column; justify-content:center;
   }
@@ -357,8 +442,42 @@
     .dev-stat-value{ font-size:19px; }
   }
 
+  /* ---------- Light spread-card variant -- same dev-* layout/content
+     structure as the homepage's dark project card, but restyled for
+     editorial pages (like a project detail page) that shouldn't just look
+     like a re-skinned homepage card. ---------- */
+  .spread-card--light{ background:#f3f2f2; }
+  .spread-card--light .dev-location{ color:rgba(28,23,18,0.55); }
+  .spread-card--light .dev-tag-label{ color:rgba(28,23,18,0.4); border-right-color:rgba(28,23,18,0.16); }
+  .spread-card--light .dev-heading{ color:#1c1712; }
+  .spread-card--light .dev-heading-sub{ color:rgba(28,23,18,0.55); }
+  .spread-card--light .dev-desc{ color:rgba(28,23,18,0.65); }
+  .spread-card--light .dev-amenity svg{ stroke:var(--gold-2); }
+  .spread-card--light .dev-amenity-label{ color:#1c1712; }
+  .spread-card--light .dev-amenity-note{ color:rgba(28,23,18,0.55); }
+  .spread-card--light .dev-stats{ border-top-color:rgba(28,23,18,0.14); }
+  .spread-card--light .dev-stat-value{ color:#1c1712; }
+  .spread-card--light .dev-stat-label{ color:rgba(28,23,18,0.5); }
+  .spread-card--light .dev-link{ color:#1c1712; border-bottom-color:rgba(28,23,18,0.3); }
+  .spread-card--light .dev-link:hover{ color:var(--gold-2); border-color:var(--gold-2); }
+
+  /* ---------- Espresso spread-card variant -- a dark accent moment for
+     editorial pages, tied to this site's own footer/CTA brown (#120807)
+     rather than the homepage card's charcoal, so dark and light sections
+     alternate down the page instead of everything reading as one long
+     white scroll. ---------- */
+  .spread-card--espresso{ background:#120807; }
+  .spread-card--espresso .dev-location{ color:#f5ecd8; }
+  .spread-card--espresso .dev-heading{ color:#ffffff; }
+  .spread-card--espresso .dev-heading-sub{ color:rgba(245,236,216,0.85); }
+  .spread-card--espresso .dev-desc{ color:rgba(245,236,216,0.78); }
+  .spread-card--espresso .dev-amenity-label{ color:#f5ecd8; }
+  .spread-card--espresso .dev-amenity-note{ color:rgba(245,236,216,0.55); }
+  .spread-card--espresso .dev-stat-value{ color:#ffffff; }
+  .spread-card--espresso .dev-stat-label{ color:rgba(245,236,216,0.5); }
+
   /* ---------- CTA banner ---------- */
-  .mag-cta{ background:#120b07; padding:100px 24px; text-align:center; }
+  .mag-cta{ background:#120807; padding:100px 24px; text-align:center; }
   .mag-cta-eyebrow{ font-family:'Jost', sans-serif; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold-1); margin:0 0 16px; }
   .mag-cta-heading{ font-family:'Jost', sans-serif; font-weight:300; font-size:32px; color:#f5ecd8; margin:0 0 20px; max-width:640px; margin-left:auto; margin-right:auto; }
   .mag-cta-sub{ font-family:'Jost', sans-serif; font-size:14px; line-height:1.7; color:rgba(245,236,216,0.65); max-width:520px; margin:0 auto 34px; }
@@ -378,15 +497,19 @@
   .spread-link:hover .spread-media img{ transform:scale(1.045); }
 
   /* ---------- Back link (project detail pages) ---------- */
-  .back-link-row{ background:#f3f2f2; padding-top:130px; }
+  .back-link-row{ background:#f3f2f2; padding:26px 24px; border-bottom:1px solid rgba(28,23,18,0.08); }
   .back-link{
-    display:inline-flex; align-items:center; gap:8px;
-    font-family:'Jost', sans-serif; font-size:11px; letter-spacing:0.12em; text-transform:uppercase;
-    color:rgba(28,23,18,0.55); text-decoration:none; padding-bottom:20px;
-    transition:color 0.3s ease;
+    display:inline-flex; align-items:center; gap:9px;
+    font-family:'Jost', sans-serif; font-size:11px; letter-spacing:0.14em; text-transform:uppercase;
+    color:rgba(28,23,18,0.55); text-decoration:none;
+    transition:color 0.3s ease, gap 0.3s ease;
   }
-  .back-link svg{ width:15px; height:15px; }
-  .back-link:hover{ color:#1c1712; }
+  .back-link svg{ width:14px; height:14px; flex:none; transition:transform 0.3s ease; }
+  .back-link:hover{ color:#1c1712; gap:13px; }
+  .back-link:hover svg{ transform:translateX(-3px); }
+  @media (max-width:720px){
+    .back-link-row{ padding:20px 20px; }
+  }
 
   /* ---------- Contact form (verbatim from the homepage's Express Your
      Interest section, minus the sticky/cover-in mechanics -- here it's
@@ -692,6 +815,41 @@
     setTimeout(function(){ window.location.href = url.href; }, 260);
   });
 } catch(e){ console.error('AFM transition error:', e); } })();
+
+// ---------- Scroll-highlighted quote text (About page) ----------
+(function(){ try {
+  var textEl = document.querySelector('.mag-quote-text');
+  if (!textEl) return;
+
+  // Split into per-word spans once, preserving the original words.
+  var words = textEl.textContent.split(/\s+/).filter(Boolean);
+  textEl.innerHTML = words.map(function(w){ return '<span class="qw">' + w + '</span>'; }).join(' ');
+  var wordEls = textEl.querySelectorAll('.qw');
+
+  var ticking = false;
+  function update(){
+    ticking = false;
+    var rect = textEl.getBoundingClientRect();
+    var vh = window.innerHeight || document.documentElement.clientHeight;
+    // Progress 0 -> 1 as the quote travels from just entering the bottom
+    // of the viewport to sitting in its upper third.
+    var start = vh * 0.9;
+    var end = vh * 0.35;
+    var progress = (start - rect.top) / (start - end);
+    progress = Math.max(0, Math.min(1, progress));
+    var litCount = Math.round(progress * wordEls.length);
+    for (var i = 0; i < wordEls.length; i++){
+      if (i < litCount) wordEls[i].classList.add('lit');
+      else wordEls[i].classList.remove('lit');
+    }
+  }
+  function onScroll(){
+    if (!ticking){ ticking = true; requestAnimationFrame(update); }
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  update();
+} catch(e){ console.error('AFM quote-highlight error:', e); } })();
 
 // ---------- Contact form (contact.html) ----------
 (function(){ try {
