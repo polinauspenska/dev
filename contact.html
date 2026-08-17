@@ -252,6 +252,34 @@
     .mag-hero-heading{ font-size:30px; }
   }
 
+  /* ---------- Hero dual-CTA row (Broker Partner page) ---------- */
+  .mag-hero-ctas{
+    display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:16px;
+    margin-top:36px;
+    opacity:0; transform:translateY(20px);
+    transition:opacity 1.1s ease 2.1s, transform 1.1s ease 2.1s;
+  }
+  .mag-hero.revealed .mag-hero-ctas{ opacity:1; transform:translateY(0); }
+  .mag-hero-btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:10px;
+    font-family:'Jost', sans-serif; font-size:11.5px; letter-spacing:0.15em; text-transform:uppercase;
+    padding:14px 28px; border-radius:2px; text-decoration:none; white-space:nowrap;
+    transition:background-position 0.5s ease, background 0.3s ease, border-color 0.3s ease;
+  }
+  .mag-hero-btn--primary{
+    color:#0c0b0a;
+    background:linear-gradient(90deg, var(--gold-1), var(--gold-3)); background-size:200% 100%; background-position:0% 0%;
+  }
+  .mag-hero-btn--primary:hover{ background-position:100% 0%; }
+  .mag-hero-btn--outline{
+    color:#fff; background:transparent; border:1px solid rgba(255,255,255,0.55);
+  }
+  .mag-hero-btn--outline:hover{ background:rgba(255,255,255,0.14); border-color:#fff; }
+  @media (max-width:560px){
+    .mag-hero-ctas{ flex-direction:column; width:100%; max-width:320px; margin-left:auto; margin-right:auto; }
+    .mag-hero-btn{ width:100%; }
+  }
+
   /* ---------- Generic scroll fade-up utility for the magazine sections below the hero ---------- */
   .reveal-up{
     opacity:0; transform:translateY(28px);
@@ -303,7 +331,8 @@
   .rak-intro p{ font-family:'Jost', sans-serif; font-weight:normal; font-size:15px; line-height:1.75; color:#3a3a3c; margin:0; }
   .rak-grid{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); border-top:1px solid rgba(28,23,18,0.1); border-left:1px solid rgba(28,23,18,0.1); max-width:1080px; margin:0 auto; }
   .rak-card{ padding:36px 34px; border-right:1px solid rgba(28,23,18,0.1); border-bottom:1px solid rgba(28,23,18,0.1); }
-  .rak-icon{ width:24px; height:24px; color:var(--gold-2); margin-bottom:20px; }
+  .rak-icon{ display:block; width:24px; height:24px; color:var(--gold-2); margin-bottom:20px; }
+  .rak-icon svg{ display:block; width:100%; height:100%; }
   .rak-card-title{ font-family:'Jost', sans-serif; font-weight:400; font-size:16.5px; letter-spacing:0.01em; color:#1c1712; margin:0 0 10px; }
   .rak-card-desc{ font-family:'Jost', sans-serif; font-weight:normal; font-size:13px; line-height:1.7; color:rgba(28,23,18,0.6); margin:0; }
   .rak-disclaimer{ font-family:'Jost', sans-serif; font-size:11px; line-height:1.6; color:rgba(28,23,18,0.4); max-width:1080px; margin:26px auto 0; }
@@ -317,14 +346,68 @@
   /* ---------- Reusable feature/amenity card grid (any page) ---------- */
   .feature-grid{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); border-top:1px solid rgba(28,23,18,0.1); border-left:1px solid rgba(28,23,18,0.1); max-width:1080px; margin:0 auto; }
   .feature-card{ padding:36px 34px; border-right:1px solid rgba(28,23,18,0.1); border-bottom:1px solid rgba(28,23,18,0.1); }
-  .feature-icon{ width:24px; height:24px; color:var(--gold-2); margin-bottom:20px; }
+  .feature-icon{ display:block; width:24px; height:24px; color:var(--gold-2); margin-bottom:20px; }
+  .feature-icon svg{ display:block; width:100%; height:100%; }
   .feature-card-title{ font-family:'Jost', sans-serif; font-weight:400; font-size:16.5px; letter-spacing:0.01em; color:#1c1712; margin:0 0 10px; }
   .feature-card-desc{ font-family:'Jost', sans-serif; font-weight:normal; font-size:13px; line-height:1.7; color:rgba(28,23,18,0.6); margin:0; }
   @media (max-width:820px){ .feature-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); } }
   @media (max-width:560px){ .feature-grid{ grid-template-columns:1fr; } }
   .feature-grid--2col{ grid-template-columns:repeat(2, minmax(0,1fr)); }
   @media (max-width:560px){ .feature-grid--2col{ grid-template-columns:1fr; } }
+
+  /* ---------- Centered variant: for card counts that don't divide evenly
+     into 3 columns (e.g. 5 cards). Cards sit on a 6-column track so the
+     4th/5th cards can be explicitly centered under row 1, at exactly the
+     same width as the row-1 cards -- avoids the height/width mismatch a
+     flex-wrap approach gets into with a short last row. Each card carries
+     its own full border (collapsed via negative margin against its
+     neighbours, table-style) rather than a container background peeking
+     through the gap -- that background approach left a visible grey block
+     under the empty outer columns next to a centered row. ---------- */
+  .feature-grid--center{
+    grid-template-columns:repeat(6, minmax(0,1fr));
+    border-top:none; border-left:none;
+    gap:0; background:transparent;
+  }
+  .feature-grid--center .feature-card{
+    grid-column:span 2;
+    border:1px solid rgba(28,23,18,0.1);
+    margin:0 0 -1px -1px;
+    background:#ffffff;
+  }
+  .feature-grid--center .feature-card:nth-child(4){ grid-column:2 / span 2; }
+  .feature-grid--center .feature-card:nth-child(5){ grid-column:4 / span 2; }
+  @media (max-width:820px){
+    .feature-grid--center{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+    .feature-grid--center .feature-card{ grid-column:auto; }
+    .feature-grid--center .feature-card:nth-child(5){ grid-column:1 / -1; max-width:50%; margin:0 auto; }
+  }
+  @media (max-width:560px){
+    .feature-grid--center{ grid-template-columns:1fr; }
+    .feature-grid--center .feature-card:nth-child(5){ max-width:none; }
+  }
   .villa-card-specs{ font-family:'Jost', sans-serif; font-size:10.5px; font-weight:400; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold-2); margin:0 0 12px; }
+
+  /* ---------- Vertical step timeline (Broker Partner page) ---------- */
+  .partner-timeline{ max-width:360px; margin:0 auto; display:flex; flex-direction:column; align-items:center; }
+  .partner-step{ display:flex; flex-direction:column; align-items:center; text-align:center; gap:16px; }
+  .partner-step-num{
+    width:54px; height:54px; border-radius:50%; flex:none;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Jost', sans-serif; font-weight:300; font-size:18px; color:var(--gold-2);
+    border:1px solid rgba(28,23,18,0.18); background:#fff;
+  }
+  .partner-step-label{ font-family:'Jost', sans-serif; font-weight:400; font-size:15px; color:#1c1712; max-width:280px; margin:0; }
+  .partner-arrow{ width:16px; height:30px; color:rgba(28,23,18,0.28); margin:6px 0; }
+  .partner-arrow svg{ width:100%; height:100%; }
+
+  /* ---------- Broker resources checklist ---------- */
+  .resource-grid{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:22px 48px; max-width:720px; margin:0 auto; }
+  .resource-item{ display:flex; align-items:center; gap:14px; }
+  .resource-check{ flex:none; width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:rgba(201,162,92,0.14); color:var(--gold-2); }
+  .resource-check svg{ width:14px; height:14px; }
+  .resource-text{ font-family:'Jost', sans-serif; font-weight:normal; font-size:14.5px; color:#1c1712; }
+  @media (max-width:560px){ .resource-grid{ grid-template-columns:1fr; max-width:340px; } }
 
   /* ---------- Villa floor-plan blocks (Township page) ---------- */
   .villa-plan-block{ max-width:1040px; margin:0 auto 72px; }
@@ -491,6 +574,47 @@
   .mag-cta-btn:hover{ background-position:100% 0%; }
   .mag-cta-btn svg{ width:15px; height:15px; }
 
+  /* ---------- Book a Meeting popup modal ---------- */
+  .book-meeting-modal{
+    position:fixed; inset:0; z-index:200;
+    display:flex; align-items:center; justify-content:center;
+    padding:24px;
+    opacity:0; visibility:hidden; pointer-events:none;
+    transition:opacity 0.35s ease, visibility 0s linear 0.35s;
+  }
+  .book-meeting-modal.is-open{
+    opacity:1; visibility:visible; pointer-events:auto;
+    transition:opacity 0.35s ease, visibility 0s linear 0s;
+  }
+  .book-meeting-modal-backdrop{ position:absolute; inset:0; background:rgba(18,8,7,0.72); cursor:pointer; }
+  .book-meeting-modal-panel{
+    position:relative; z-index:1;
+    width:100%; max-width:440px; max-height:88vh; overflow-y:auto;
+    background:#ffffff; padding:44px 36px;
+    transform:translateY(18px) scale(0.98);
+    transition:transform 0.35s cubic-bezier(.22,.9,.34,1);
+  }
+  .book-meeting-modal.is-open .book-meeting-modal-panel{ transform:translateY(0) scale(1); }
+  .book-meeting-modal-close{
+    position:absolute; top:14px; right:14px;
+    width:32px; height:32px; border:none; background:none; cursor:pointer; padding:0;
+    display:flex; align-items:center; justify-content:center; color:rgba(28,23,18,0.5);
+    transition:color 0.3s ease;
+  }
+  .book-meeting-modal-close:hover{ color:#1c1712; }
+  .book-meeting-modal-close svg{ width:18px; height:18px; }
+  .book-meeting-modal-eyebrow{ font-family:'Jost', sans-serif; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold-2); margin:0 0 12px; text-align:center; }
+  .book-meeting-modal-heading{ font-family:'Jost', sans-serif; font-weight:300; font-size:24px; color:#1c1712; margin:0 0 10px; text-align:center; }
+  .book-meeting-modal-sub{ font-family:'Jost', sans-serif; font-size:13px; line-height:1.6; color:rgba(28,23,18,0.6); margin:0 0 30px; text-align:center; }
+  /* Modal form fields render immediately -- they aren't scroll-revealed
+     like the on-page interest-form instances, since the modal itself
+     starts hidden and is toggled open rather than scrolled into view. */
+  .book-meeting-modal-panel .form-field{ opacity:1; transform:none; margin-bottom:16px; }
+  .book-meeting-modal-panel .interest-submit{ opacity:1; transform:none; }
+  @media (max-width:560px){
+    .book-meeting-modal-panel{ padding:36px 24px; }
+  }
+
   /* ---------- Projects overview: whole card as a link ---------- */
   .spread-link{ text-decoration:none; color:inherit; cursor:pointer; }
   .spread-media img{ transition:transform 0.6s cubic-bezier(.22,.9,.34,1); }
@@ -638,7 +762,7 @@
         <li class="nav-item"><a href="index.html">Home</a></li>
         <li class="nav-item"><a href="about.html">About</a></li>
         <li class="nav-item"><a href="projects.html">Projects</a></li>
-        <li class="nav-item"><a href="#">News</a></li>
+        <li class="nav-item"><a href="broker.html">Become a Partner</a></li>
         <li class="nav-item"><a href="contact.html">Contact Us</a></li>
       </ul>
       <div class="nav-item nav-social">
@@ -753,7 +877,7 @@
         <nav class="footer-links">
           <a href="about.html">About</a>
           <a href="projects.html">Projects</a>
-          <a href="#">News</a>
+          <a href="broker.html">Become a Partner</a>
           <a href="contact.html">Contact Us</a>
         </nav>
         <div class="footer-social">
@@ -851,10 +975,13 @@
   update();
 } catch(e){ console.error('AFM quote-highlight error:', e); } })();
 
-// ---------- Contact form (contact.html) ----------
+// ---------- Contact / interest-style forms (any page may have one or
+// more of these: contact.html has one, the Broker Partner page has two
+// -- registration and book-a-meeting -- so everything here iterates
+// over every matching element rather than assuming a single instance). ----------
 (function(){ try {
-  var section = document.querySelector('.interest-section');
-  if (section){
+  var sections = document.querySelectorAll('.interest-section');
+  sections.forEach(function(section){
     if ('IntersectionObserver' in window){
       var io = new IntersectionObserver(function(entries){
         entries.forEach(function(entry){
@@ -865,55 +992,92 @@
     } else {
       section.classList.add('in-view');
     }
-  }
 
-  var glow = document.querySelector('.interest-glow');
-  if (section && glow){
-    var hideTimer = null;
-    section.addEventListener('mousemove', function(e){
-      var rect = section.getBoundingClientRect();
-      var x = ((e.clientX - rect.left) / rect.width) * 100;
-      var y = ((e.clientY - rect.top) / rect.height) * 100;
-      section.style.setProperty('--ix', x + '%');
-      section.style.setProperty('--iy', y + '%');
-      glow.classList.add('active');
-      if (hideTimer) clearTimeout(hideTimer);
-    });
-    section.addEventListener('mouseleave', function(){
-      hideTimer = setTimeout(function(){ glow.classList.remove('active'); }, 400);
-    });
-  }
+    var glow = section.querySelector('.interest-glow');
+    if (glow){
+      var hideTimer = null;
+      section.addEventListener('mousemove', function(e){
+        var rect = section.getBoundingClientRect();
+        var x = ((e.clientX - rect.left) / rect.width) * 100;
+        var y = ((e.clientY - rect.top) / rect.height) * 100;
+        section.style.setProperty('--ix', x + '%');
+        section.style.setProperty('--iy', y + '%');
+        glow.classList.add('active');
+        if (hideTimer) clearTimeout(hideTimer);
+      });
+      section.addEventListener('mouseleave', function(){
+        hideTimer = setTimeout(function(){ glow.classList.remove('active'); }, 400);
+      });
+    }
+  });
 
-  var form = document.getElementById('interestForm');
-  var status = document.getElementById('interestStatus');
-  if (form){
+  var forms = document.querySelectorAll('form.interest-form');
+  forms.forEach(function(form){
+    var status = form.querySelector('.interest-status');
     form.addEventListener('submit', function(e){
       e.preventDefault();
-      var nameEl = document.getElementById('ifName');
-      var emailEl = document.getElementById('ifEmail');
-      var name = nameEl ? nameEl.value.trim() : '';
-      var email = emailEl ? emailEl.value.trim() : '';
-      var phone = document.getElementById('ifPhone').value.trim();
-      var project = document.getElementById('ifProject').value;
-      var message = document.getElementById('ifMessage').value.trim();
-
-      var subject = 'Enquiry from ' + (name || 'AFM Developments website');
-      var body = [
-        'Name: ' + name,
-        'Email: ' + email,
-        'Phone: ' + (phone || '-'),
-        'Project of interest: ' + (project || '-'),
-        '',
-        'Message:',
-        message || '-'
-      ].join('\n');
+      // Generic field walk: works for any form using this component,
+      // regardless of which named fields it actually contains -- reads
+      // each field's associated label element's text (falling back to
+      // its name attribute) so the emailed body stays readable.
+      var fields = form.querySelectorAll('input[name], select[name], textarea[name]');
+      var name = '';
+      var lines = [];
+      for (var i = 0; i < fields.length; i++){
+        var el = fields[i];
+        var labelEl = el.id ? form.querySelector('label[for="' + el.id + '"]') : null;
+        var labelText = labelEl ? labelEl.textContent.trim() : el.name;
+        var val = (el.value || '').trim();
+        if (el.name === 'name') name = val;
+        lines.push(labelText + ': ' + (val || '-'));
+      }
+      var subjectPrefix = form.getAttribute('data-subject') || 'Enquiry';
+      var subject = subjectPrefix + ' from ' + (name || 'AFM Developments website');
+      var body = lines.join('\n');
       var mailto = 'mailto:info@afmdevelopments.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
 
       if (status) status.textContent = 'Opening your email client to send this enquiry...';
       window.location.href = mailto;
     });
-  }
+  });
 } catch(e){ console.error('AFM contact form error:', e); } })();
+
+// ---------- Generic popup modal (data-modal-open / data-modal-close) ----------
+// Only the Broker Partner page currently has a modal (.book-meeting-modal),
+// but this is written generically so any future page can reuse the same
+// data attributes without new JS.
+(function(){ try {
+  function closeModal(modal){
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('click', function(e){
+    var opener = e.target.closest('[data-modal-open]');
+    if (opener){
+      var modal = document.getElementById(opener.getAttribute('data-modal-open'));
+      if (modal){
+        e.preventDefault();
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        var firstField = modal.querySelector('input, textarea, select');
+        if (firstField) setTimeout(function(){ firstField.focus(); }, 350);
+      }
+      return;
+    }
+    var closer = e.target.closest('[data-modal-close]');
+    if (closer){
+      var openModal = closer.closest('.book-meeting-modal');
+      if (openModal){ e.preventDefault(); closeModal(openModal); }
+    }
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key !== 'Escape') return;
+    var openEl = document.querySelector('.book-meeting-modal.is-open');
+    if (openEl) closeModal(openEl);
+  });
+} catch(e){ console.error('AFM modal error:', e); } })();
 
 // ---------- Header: show once scrolled past the hero ----------
 (function(){ try {
