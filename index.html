@@ -895,22 +895,45 @@
       width:100% !important;
       transform:none !important;
     }
-    /* Card copy (location/heading/desc/amenities/stats/link) routinely runs
-       taller than one mobile screen. The old fixed height:100vh + centered
-       content + hidden overflow on the parent clipped whatever didn't fit --
-       switched to a content-driven min-height with top-aligned content so
-       nothing gets cut off; the slide just grows past one screen and the
-       user scrolls through it normally. */
+    /* Card copy (location/heading/desc/amenities/stats/link) routinely ran
+       taller than one mobile screen under the old fixed height:100vh +
+       centered content + hidden overflow, which clipped whatever didn't
+       fit. Switched to a purely content-driven height (no forced min-height)
+       with top-aligned content, and tightened the type scale/spacing below
+       so each card stays compact instead of stretching to a full screen
+       regardless of how much copy it actually has -- scrolling past both
+       Bonito and Township should feel brisk, not like two long pages. */
     .dev-slide{
       width:100%;
       height:auto;
-      min-height:100vh;
-      min-height:100dvh;
       align-items:flex-start;
-      padding-bottom:56px;
+      padding-bottom:40px;
     }
     .dev-card{
-      padding:40px 24px 0;
+      padding:36px 24px 0;
+    }
+    .dev-heading{
+      font-size:32px;
+    }
+    .dev-heading-sub{
+      margin:4px 0 14px;
+      font-size:16px;
+    }
+    .dev-desc{
+      font-size:14px;
+      line-height:1.6;
+      margin:0 0 20px;
+    }
+    .dev-amenities{
+      gap:10px;
+      margin:0 0 20px;
+    }
+    .dev-stats, .dev-stats.dev-stats--5, .dev-stats.dev-stats--3{
+      padding-top:18px;
+      row-gap:16px;
+    }
+    .dev-link{
+      margin-top:20px;
     }
   }
 
