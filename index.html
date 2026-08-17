@@ -1241,6 +1241,12 @@
     transition:opacity 0.7s cubic-bezier(.22,.9,.34,1), transform 0.7s cubic-bezier(.22,.9,.34,1);
   }
   .interest-section.in-view .reach-item{ opacity:1; transform:translateY(0); }
+  /* The label+value pair sits in a plain (unclassed) div inside the flex
+     row -- flex items default to min-width:auto, which refuses to shrink
+     below the full width of a nowrap text node (the email address), so
+     .reach-value's overflow:hidden/ellipsis never actually engaged and the
+     text just spilled past the card edge instead of truncating. */
+  .reach-item > div{ min-width:0; flex:1 1 auto; }
   .reach-icon{
     flex:none;
     width:32px;

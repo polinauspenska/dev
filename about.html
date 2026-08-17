@@ -688,6 +688,11 @@
     transition:opacity 0.7s cubic-bezier(.22,.9,.34,1), transform 0.7s cubic-bezier(.22,.9,.34,1);
   }
   .interest-section.in-view .reach-item{ opacity:1; transform:translateY(0); }
+  /* See build_site.py for the full explanation: the label+value wrapper is
+     a plain flex-item div that defaults to min-width:auto, which blocks
+     .reach-value's overflow:hidden/ellipsis from ever engaging on the
+     nowrap email/address text -- it just overflows the card instead. */
+  .reach-item > div{ min-width:0; flex:1 1 auto; }
   .reach-icon{ flex:none; width:32px; height:32px; border-radius:50%; border:1px solid rgba(138,107,61,0.4); display:flex; align-items:center; justify-content:center; color:#8a6b3d; }
   .reach-icon svg{ width:14px; height:14px; }
   .reach-label{ font-family:'Jost', sans-serif; font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:rgba(28,23,18,0.5); margin:0 0 3px; }
