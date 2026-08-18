@@ -407,8 +407,8 @@
     position:relative; flex:none;
     width:250px; height:260px;
     filter:drop-shadow(0 10px 24px rgba(28,23,18,0.1));
-    opacity:0; transform:scale(0.88) translateY(16px);
-    transition:opacity 0.7s cubic-bezier(.22,.9,.34,1), transform 0.7s cubic-bezier(.22,.9,.34,1);
+    opacity:0; transform:scale(0.8) translateY(32px);
+    transition:opacity 1.1s cubic-bezier(.22,.9,.34,1), transform 1.1s cubic-bezier(.22,.9,.34,1);
   }
   .puzzle-piece.in-view{ opacity:1; transform:scale(1) translateY(0); }
   .puzzle-piece--1{ clip-path:url(#puzzle-tab-r); z-index:4; }
@@ -437,26 +437,32 @@
   .puzzle-desc{ font-family:'Jost', sans-serif; font-weight:normal; font-size:12.5px; line-height:1.6; color:rgba(28,23,18,0.55); margin:0; }
   @media (max-width:900px){ .puzzle-row{ display:none; } }
 
-  /* ---------- Mobile/tablet fallback: plain stacked steps, no puzzle geometry,
-     same scale+fade entrance as the desktop puzzle pieces so the motion
-     language matches across breakpoints. ---------- */
+  /* ---------- Mobile/tablet: same jigsaw idea, rotated 90deg -- tab on the
+     bottom edge, notch on the top edge, so pieces interlock stacking
+     downward instead of sitting side by side. Fixed 300px piece width
+     comfortably fits any phone (this codebase's mobile content already
+     maxes out at 340px elsewhere), so unlike the 4-across desktop row this
+     doesn't need an arbitrary-width fallback. ---------- */
   .step-list{ display:none; }
   @media (max-width:900px){
     .step-list{
-      display:flex; flex-direction:column; gap:36px;
+      display:flex; flex-direction:column; align-items:center;
       max-width:340px; margin:0 auto;
     }
-    .step-list .reveal-up{
-      opacity:0; transform:scale(0.88) translateY(16px);
-      transition:opacity 0.7s cubic-bezier(.22,.9,.34,1), transform 0.7s cubic-bezier(.22,.9,.34,1);
-      background:#ffffff;
-      border:1px solid rgba(28,23,18,0.16);
-      border-radius:3px;
-      padding:32px 26px;
-      filter:drop-shadow(0 8px 18px rgba(28,23,18,0.08));
+    .step-piece{
+      position:relative; flex:none; width:300px;
+      filter:drop-shadow(0 8px 18px rgba(28,23,18,0.09));
+      opacity:0; transform:scale(0.82) translateY(28px);
+      transition:opacity 1.1s cubic-bezier(.22,.9,.34,1), transform 1.1s cubic-bezier(.22,.9,.34,1);
     }
-    .step-list .reveal-up.in-view{ opacity:1; transform:scale(1) translateY(0); }
-    .step-list .puzzle-num{ -webkit-text-stroke:1px var(--gold-2); font-size:32px; margin-bottom:12px; }
+    .step-piece.in-view{ opacity:1; transform:scale(1) translateY(0); }
+    .step-piece--1{ height:190px; clip-path:url(#puzzle-m-tab-b); z-index:4; }
+    .step-piece--2{ height:190px; clip-path:url(#puzzle-m-notch-t-tab-b); z-index:3; margin-top:-20px; }
+    .step-piece--3{ height:190px; clip-path:url(#puzzle-m-notch-t-tab-b); z-index:2; margin-top:-20px; }
+    .step-piece--4{ height:170px; clip-path:url(#puzzle-m-notch-t); z-index:1; margin-top:-20px; }
+    .step-piece .puzzle-piece-inner{ padding:30px 30px 28px; align-items:center; text-align:center; }
+    .step-piece .puzzle-num{ -webkit-text-stroke:1px var(--gold-2); font-size:32px; margin-bottom:10px; }
+    .step-piece .puzzle-desc{ max-width:220px; }
   }
 
   /* ---------- Broker resources checklist ---------- */
@@ -922,6 +928,15 @@
           <clipPath id="puzzle-notch-l" clipPathUnits="userSpaceOnUse">
             <path id="pz-notch-l" d="M0,0 L230,0 L230,260 L0,260 L0,150 C0,150 20,150 20,130 C20,110 0,110 0,110 Z"/>
           </clipPath>
+          <clipPath id="puzzle-m-tab-b" clipPathUnits="userSpaceOnUse">
+            <path id="pz-m-tab-b" d="M0,0 L300,0 L300,170 L170,170 C170,170 170,190 150,190 C130,190 130,170 130,170 L0,170 Z"/>
+          </clipPath>
+          <clipPath id="puzzle-m-notch-t-tab-b" clipPathUnits="userSpaceOnUse">
+            <path id="pz-m-notch-t-tab-b" d="M0,0 L130,0 C130,0 130,20 150,20 C170,20 170,0 170,0 L300,0 L300,170 L170,170 C170,170 170,190 150,190 C130,190 130,170 130,170 L0,170 Z"/>
+          </clipPath>
+          <clipPath id="puzzle-m-notch-t" clipPathUnits="userSpaceOnUse">
+            <path id="pz-m-notch-t" d="M0,0 L130,0 C130,0 130,20 150,20 C170,20 170,0 170,0 L300,0 L300,170 L0,170 Z"/>
+          </clipPath>
         </defs>
       </svg>
 
@@ -965,25 +980,41 @@
       </div>
 
       <div class="step-list">
-        <div class="reveal-up" style="transition-delay:0s">
-          <div class="puzzle-num">01</div>
-          <p class="puzzle-label">Register</p>
-          <p class="puzzle-desc">Submit your details and join our broker partner network.</p>
+        <div class="step-piece step-piece--1 reveal-up" style="transition-delay:0s">
+          <div class="puzzle-piece-fill"></div>
+          <svg class="puzzle-piece-outline" viewBox="0 0 300 190" preserveAspectRatio="none"><use href="#pz-m-tab-b"></use></svg>
+          <div class="puzzle-piece-inner">
+            <div class="puzzle-num">01</div>
+            <p class="puzzle-label">Register</p>
+            <p class="puzzle-desc">Submit your details and join our broker partner network.</p>
+          </div>
         </div>
-        <div class="reveal-up" style="transition-delay:0.1s">
-          <div class="puzzle-num">02</div>
-          <p class="puzzle-label">Our Team Contacts You</p>
-          <p class="puzzle-desc">A member of our sales team reaches out to begin onboarding.</p>
+        <div class="step-piece step-piece--2 reveal-up" style="transition-delay:0.12s">
+          <div class="puzzle-piece-fill"></div>
+          <svg class="puzzle-piece-outline" viewBox="0 0 300 190" preserveAspectRatio="none"><use href="#pz-m-notch-t-tab-b"></use></svg>
+          <div class="puzzle-piece-inner">
+            <div class="puzzle-num">02</div>
+            <p class="puzzle-label">Our Team Contacts You</p>
+            <p class="puzzle-desc">A member of our sales team reaches out to begin onboarding.</p>
+          </div>
         </div>
-        <div class="reveal-up" style="transition-delay:0.2s">
-          <div class="puzzle-num">03</div>
-          <p class="puzzle-label">Receive Broker Pack</p>
-          <p class="puzzle-desc">Get brochures, presentations, and full project documentation.</p>
+        <div class="step-piece step-piece--3 reveal-up" style="transition-delay:0.24s">
+          <div class="puzzle-piece-fill"></div>
+          <svg class="puzzle-piece-outline" viewBox="0 0 300 190" preserveAspectRatio="none"><use href="#pz-m-notch-t-tab-b"></use></svg>
+          <div class="puzzle-piece-inner">
+            <div class="puzzle-num">03</div>
+            <p class="puzzle-label">Receive Broker Pack</p>
+            <p class="puzzle-desc">Get brochures, presentations, and full project documentation.</p>
+          </div>
         </div>
-        <div class="reveal-up" style="transition-delay:0.3s">
-          <div class="puzzle-num">04</div>
-          <p class="puzzle-label">Start Introducing Buyers</p>
-          <p class="puzzle-desc">Begin representing AFM Developments to your qualified clients.</p>
+        <div class="step-piece step-piece--4 reveal-up" style="transition-delay:0.36s">
+          <div class="puzzle-piece-fill"></div>
+          <svg class="puzzle-piece-outline" viewBox="0 0 300 170" preserveAspectRatio="none"><use href="#pz-m-notch-t"></use></svg>
+          <div class="puzzle-piece-inner">
+            <div class="puzzle-num">04</div>
+            <p class="puzzle-label">Start Introducing Buyers</p>
+            <p class="puzzle-desc">Begin representing AFM Developments to your qualified clients.</p>
+          </div>
         </div>
       </div>
     </div>
