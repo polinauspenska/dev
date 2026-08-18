@@ -391,51 +391,56 @@
   }
   .villa-card-specs{ font-family:'Jost', sans-serif; font-size:10.5px; font-weight:400; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold-2); margin:0 0 12px; }
 
-  /* ---------- Editorial four-step timeline (Broker Partner page). Hollow
-     serif-weight numerals sit on a thin rule that draws itself in (0% to
-     100% width) once the section scrolls into view; the numerals carry the
-     section's own background color so they visually "cut" the line rather
-     than sitting on top of it, the classic editorial-timeline trick. Each
-     step also gets its own reveal-up + stagger delay for a step-by-step
-     entrance, independent of the line-fill animation on the parent. ---------- */
-  .partner-timeline{
-    position:relative;
-    display:grid;
-    grid-template-columns:repeat(4, minmax(0,1fr));
-    gap:0 36px;
-    max-width:1080px;
-    margin:0 auto;
+  /* ---------- Jigsaw four-step process (Broker Partner page). Four SVG
+     clip-path pieces sit edge to edge, each pulled left by the tab's 20px
+     overhang (negative margin) so its own notch tucks exactly under the
+     previous piece's tab -- a true interlocking puzzle strip, not just a
+     decorative icon. Desktop only: below 900px the geometry can't be kept
+     legible at arbitrary widths, so it falls back to a plain stacked list
+     (separate markup, toggled by display, not by squashing the puzzle). ---------- */
+  .puzzle-defs{ position:absolute; width:0; height:0; overflow:hidden; }
+  .puzzle-row{
+    display:flex; align-items:flex-start; justify-content:center;
+    max-width:1080px; margin:0 auto;
   }
-  .partner-timeline-rule{
-    position:absolute; left:0; right:0; top:22px; height:1px;
-    background:rgba(28,23,18,0.14);
-    overflow:hidden;
+  .puzzle-piece{
+    position:relative; flex:none;
+    width:250px; height:260px;
+    filter:drop-shadow(0 10px 24px rgba(28,23,18,0.1));
+    opacity:0; transform:scale(0.88) translateY(16px);
+    transition:opacity 0.7s cubic-bezier(.22,.9,.34,1), transform 0.7s cubic-bezier(.22,.9,.34,1);
   }
-  .partner-timeline-fill{
-    position:absolute; left:0; top:0; bottom:0; width:0%;
-    background:linear-gradient(90deg, var(--gold-1), var(--gold-3));
-    transition:width 1.6s cubic-bezier(.22,.9,.34,1) 0.15s;
+  .puzzle-piece.in-view{ opacity:1; transform:scale(1) translateY(0); }
+  .puzzle-piece--1{ clip-path:url(#puzzle-tab-r); z-index:4; }
+  .puzzle-piece--2{ clip-path:url(#puzzle-notch-l-tab-r); z-index:3; margin-left:-20px; }
+  .puzzle-piece--3{ clip-path:url(#puzzle-notch-l-tab-r); z-index:2; margin-left:-20px; }
+  .puzzle-piece--4{ width:230px; clip-path:url(#puzzle-notch-l); z-index:1; margin-left:-20px; }
+  .puzzle-piece-fill{ position:absolute; inset:0; background:#ffffff; }
+  .puzzle-piece-inner{
+    position:relative; z-index:1; height:100%;
+    display:flex; flex-direction:column; justify-content:center;
+    padding:40px 32px 40px 42px;
   }
-  .partner-timeline.in-view .partner-timeline-fill{ width:100%; }
-  .partner-step{
-    position:relative; z-index:1;
-    display:flex; flex-direction:column; align-items:flex-start; text-align:left;
-  }
-  .partner-step-num{
-    font-family:'Jost', sans-serif; font-weight:200; font-size:44px; line-height:1;
+  .puzzle-piece--1 .puzzle-piece-inner{ padding-left:30px; }
+  .puzzle-num{
+    font-family:'Jost', sans-serif; font-weight:200; font-size:42px; line-height:1;
     color:transparent; -webkit-text-stroke:1px var(--gold-2);
-    background:#f3f2f2;
-    display:inline-block; padding-right:14px; margin:0 0 22px;
+    margin:0 0 16px;
     transition:color 0.5s ease;
   }
-  .partner-step:hover .partner-step-num{ color:var(--gold-2); }
-  .partner-step-label{ font-family:'Jost', sans-serif; font-weight:400; font-size:16px; color:#1c1712; margin:0 0 8px; }
-  .partner-step-desc{ font-family:'Jost', sans-serif; font-weight:normal; font-size:13px; line-height:1.65; color:rgba(28,23,18,0.55); margin:0; max-width:220px; }
-  @media (max-width:820px){
-    .partner-timeline{ grid-template-columns:1fr; gap:36px; max-width:340px; }
-    .partner-timeline-rule{ display:none; }
-    .partner-step-num{ background:transparent; font-size:34px; margin-bottom:16px; }
-    .partner-step-desc{ max-width:none; }
+  .puzzle-piece:hover .puzzle-num{ color:var(--gold-2); }
+  .puzzle-label{ font-family:'Jost', sans-serif; font-weight:400; font-size:15.5px; color:#1c1712; margin:0 0 8px; }
+  .puzzle-desc{ font-family:'Jost', sans-serif; font-weight:normal; font-size:12.5px; line-height:1.6; color:rgba(28,23,18,0.55); margin:0; }
+  @media (max-width:900px){ .puzzle-row{ display:none; } }
+
+  /* ---------- Mobile/tablet fallback: plain stacked steps, no puzzle geometry ---------- */
+  .step-list{ display:none; }
+  @media (max-width:900px){
+    .step-list{
+      display:flex; flex-direction:column; gap:36px;
+      max-width:340px; margin:0 auto;
+    }
+    .step-list .puzzle-num{ -webkit-text-stroke:1px var(--gold-2); font-size:32px; margin-bottom:12px; }
   }
 
   /* ---------- Broker resources checklist ---------- */
@@ -889,27 +894,76 @@
         <p class="next-eyebrow">How the Partnership Works</p>
         <h2 class="next-heading">A Simple Four-Step Process</h2>
       </div>
-      <div class="partner-timeline reveal-up">
-        <div class="partner-timeline-rule"><span class="partner-timeline-fill"></span></div>
-        <div class="partner-step reveal-up" style="transition-delay:0s">
-          <div class="partner-step-num">01</div>
-          <p class="partner-step-label">Register</p>
-          <p class="partner-step-desc">Submit your details and join our broker partner network.</p>
+
+      <svg class="puzzle-defs" aria-hidden="true">
+        <defs>
+          <clipPath id="puzzle-tab-r" clipPathUnits="userSpaceOnUse">
+            <path d="M0,0 L230,0 L230,110 C230,110 250,110 250,130 C250,150 230,150 230,150 L230,260 L0,260 Z"/>
+          </clipPath>
+          <clipPath id="puzzle-notch-l-tab-r" clipPathUnits="userSpaceOnUse">
+            <path d="M0,0 L230,0 L230,110 C230,110 250,110 250,130 C250,150 230,150 230,150 L230,260 L0,260 L0,150 C0,150 20,150 20,130 C20,110 0,110 0,110 Z"/>
+          </clipPath>
+          <clipPath id="puzzle-notch-l" clipPathUnits="userSpaceOnUse">
+            <path d="M0,0 L230,0 L230,260 L0,260 L0,150 C0,150 20,150 20,130 C20,110 0,110 0,110 Z"/>
+          </clipPath>
+        </defs>
+      </svg>
+
+      <div class="puzzle-row">
+        <div class="puzzle-piece puzzle-piece--1 reveal-up" style="transition-delay:0s">
+          <div class="puzzle-piece-fill"></div>
+          <div class="puzzle-piece-inner">
+            <div class="puzzle-num">01</div>
+            <p class="puzzle-label">Register</p>
+            <p class="puzzle-desc">Submit your details and join our broker partner network.</p>
+          </div>
         </div>
-        <div class="partner-step reveal-up" style="transition-delay:0.1s">
-          <div class="partner-step-num">02</div>
-          <p class="partner-step-label">Our Team Contacts You</p>
-          <p class="partner-step-desc">A member of our sales team reaches out to begin onboarding.</p>
+        <div class="puzzle-piece puzzle-piece--2 reveal-up" style="transition-delay:0.12s">
+          <div class="puzzle-piece-fill"></div>
+          <div class="puzzle-piece-inner">
+            <div class="puzzle-num">02</div>
+            <p class="puzzle-label">Our Team Contacts You</p>
+            <p class="puzzle-desc">A member of our sales team reaches out to begin onboarding.</p>
+          </div>
         </div>
-        <div class="partner-step reveal-up" style="transition-delay:0.2s">
-          <div class="partner-step-num">03</div>
-          <p class="partner-step-label">Receive Broker Pack</p>
-          <p class="partner-step-desc">Get brochures, presentations, and full project documentation.</p>
+        <div class="puzzle-piece puzzle-piece--3 reveal-up" style="transition-delay:0.24s">
+          <div class="puzzle-piece-fill"></div>
+          <div class="puzzle-piece-inner">
+            <div class="puzzle-num">03</div>
+            <p class="puzzle-label">Receive Broker Pack</p>
+            <p class="puzzle-desc">Get brochures, presentations, and full project documentation.</p>
+          </div>
         </div>
-        <div class="partner-step reveal-up" style="transition-delay:0.3s">
-          <div class="partner-step-num">04</div>
-          <p class="partner-step-label">Start Introducing Buyers</p>
-          <p class="partner-step-desc">Begin representing AFM Developments to your qualified clients.</p>
+        <div class="puzzle-piece puzzle-piece--4 reveal-up" style="transition-delay:0.36s">
+          <div class="puzzle-piece-fill"></div>
+          <div class="puzzle-piece-inner">
+            <div class="puzzle-num">04</div>
+            <p class="puzzle-label">Start Introducing Buyers</p>
+            <p class="puzzle-desc">Begin representing AFM Developments to your qualified clients.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-list">
+        <div class="reveal-up" style="transition-delay:0s">
+          <div class="puzzle-num">01</div>
+          <p class="puzzle-label">Register</p>
+          <p class="puzzle-desc">Submit your details and join our broker partner network.</p>
+        </div>
+        <div class="reveal-up" style="transition-delay:0.1s">
+          <div class="puzzle-num">02</div>
+          <p class="puzzle-label">Our Team Contacts You</p>
+          <p class="puzzle-desc">A member of our sales team reaches out to begin onboarding.</p>
+        </div>
+        <div class="reveal-up" style="transition-delay:0.2s">
+          <div class="puzzle-num">03</div>
+          <p class="puzzle-label">Receive Broker Pack</p>
+          <p class="puzzle-desc">Get brochures, presentations, and full project documentation.</p>
+        </div>
+        <div class="reveal-up" style="transition-delay:0.3s">
+          <div class="puzzle-num">04</div>
+          <p class="puzzle-label">Start Introducing Buyers</p>
+          <p class="puzzle-desc">Begin representing AFM Developments to your qualified clients.</p>
         </div>
       </div>
     </div>
