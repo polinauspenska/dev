@@ -416,12 +416,16 @@
   .puzzle-piece--3{ clip-path:url(#puzzle-notch-l-tab-r); z-index:2; margin-left:-20px; }
   .puzzle-piece--4{ width:230px; clip-path:url(#puzzle-notch-l); z-index:1; margin-left:-20px; }
   .puzzle-piece-fill{ position:absolute; inset:0; background:#ffffff; }
+  .puzzle-piece-outline{
+    position:absolute; inset:0; width:100%; height:100%;
+    fill:none; stroke:rgba(28,23,18,0.16); stroke-width:1.2px;
+    pointer-events:none;
+  }
   .puzzle-piece-inner{
     position:relative; z-index:1; height:100%;
     display:flex; flex-direction:column; justify-content:center;
     padding:40px 32px 40px 42px;
   }
-  .puzzle-piece--1 .puzzle-piece-inner{ padding-left:30px; }
   .puzzle-num{
     font-family:'Jost', sans-serif; font-weight:200; font-size:42px; line-height:1;
     color:transparent; -webkit-text-stroke:1px var(--gold-2);
@@ -433,13 +437,20 @@
   .puzzle-desc{ font-family:'Jost', sans-serif; font-weight:normal; font-size:12.5px; line-height:1.6; color:rgba(28,23,18,0.55); margin:0; }
   @media (max-width:900px){ .puzzle-row{ display:none; } }
 
-  /* ---------- Mobile/tablet fallback: plain stacked steps, no puzzle geometry ---------- */
+  /* ---------- Mobile/tablet fallback: plain stacked steps, no puzzle geometry,
+     same scale+fade entrance as the desktop puzzle pieces so the motion
+     language matches across breakpoints. ---------- */
   .step-list{ display:none; }
   @media (max-width:900px){
     .step-list{
       display:flex; flex-direction:column; gap:36px;
       max-width:340px; margin:0 auto;
     }
+    .step-list .reveal-up{
+      opacity:0; transform:scale(0.88) translateY(16px);
+      transition:opacity 0.7s cubic-bezier(.22,.9,.34,1), transform 0.7s cubic-bezier(.22,.9,.34,1);
+    }
+    .step-list .reveal-up.in-view{ opacity:1; transform:scale(1) translateY(0); }
     .step-list .puzzle-num{ -webkit-text-stroke:1px var(--gold-2); font-size:32px; margin-bottom:12px; }
   }
 
@@ -898,13 +909,13 @@
       <svg class="puzzle-defs" aria-hidden="true">
         <defs>
           <clipPath id="puzzle-tab-r" clipPathUnits="userSpaceOnUse">
-            <path d="M0,0 L230,0 L230,110 C230,110 250,110 250,130 C250,150 230,150 230,150 L230,260 L0,260 Z"/>
+            <path id="pz-tab-r" d="M0,0 L230,0 L230,110 C230,110 250,110 250,130 C250,150 230,150 230,150 L230,260 L0,260 Z"/>
           </clipPath>
           <clipPath id="puzzle-notch-l-tab-r" clipPathUnits="userSpaceOnUse">
-            <path d="M0,0 L230,0 L230,110 C230,110 250,110 250,130 C250,150 230,150 230,150 L230,260 L0,260 L0,150 C0,150 20,150 20,130 C20,110 0,110 0,110 Z"/>
+            <path id="pz-notch-l-tab-r" d="M0,0 L230,0 L230,110 C230,110 250,110 250,130 C250,150 230,150 230,150 L230,260 L0,260 L0,150 C0,150 20,150 20,130 C20,110 0,110 0,110 Z"/>
           </clipPath>
           <clipPath id="puzzle-notch-l" clipPathUnits="userSpaceOnUse">
-            <path d="M0,0 L230,0 L230,260 L0,260 L0,150 C0,150 20,150 20,130 C20,110 0,110 0,110 Z"/>
+            <path id="pz-notch-l" d="M0,0 L230,0 L230,260 L0,260 L0,150 C0,150 20,150 20,130 C20,110 0,110 0,110 Z"/>
           </clipPath>
         </defs>
       </svg>
@@ -912,6 +923,7 @@
       <div class="puzzle-row">
         <div class="puzzle-piece puzzle-piece--1 reveal-up" style="transition-delay:0s">
           <div class="puzzle-piece-fill"></div>
+          <svg class="puzzle-piece-outline" viewBox="0 0 250 260" preserveAspectRatio="none"><use href="#pz-tab-r"></use></svg>
           <div class="puzzle-piece-inner">
             <div class="puzzle-num">01</div>
             <p class="puzzle-label">Register</p>
@@ -920,6 +932,7 @@
         </div>
         <div class="puzzle-piece puzzle-piece--2 reveal-up" style="transition-delay:0.12s">
           <div class="puzzle-piece-fill"></div>
+          <svg class="puzzle-piece-outline" viewBox="0 0 250 260" preserveAspectRatio="none"><use href="#pz-notch-l-tab-r"></use></svg>
           <div class="puzzle-piece-inner">
             <div class="puzzle-num">02</div>
             <p class="puzzle-label">Our Team Contacts You</p>
@@ -928,6 +941,7 @@
         </div>
         <div class="puzzle-piece puzzle-piece--3 reveal-up" style="transition-delay:0.24s">
           <div class="puzzle-piece-fill"></div>
+          <svg class="puzzle-piece-outline" viewBox="0 0 250 260" preserveAspectRatio="none"><use href="#pz-notch-l-tab-r"></use></svg>
           <div class="puzzle-piece-inner">
             <div class="puzzle-num">03</div>
             <p class="puzzle-label">Receive Broker Pack</p>
@@ -936,6 +950,7 @@
         </div>
         <div class="puzzle-piece puzzle-piece--4 reveal-up" style="transition-delay:0.36s">
           <div class="puzzle-piece-fill"></div>
+          <svg class="puzzle-piece-outline" viewBox="0 0 230 260" preserveAspectRatio="none"><use href="#pz-notch-l"></use></svg>
           <div class="puzzle-piece-inner">
             <div class="puzzle-num">04</div>
             <p class="puzzle-label">Start Introducing Buyers</p>
