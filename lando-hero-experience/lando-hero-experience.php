@@ -57,6 +57,16 @@ function ln_hero_register_menu() {
 }
 add_action( 'after_setup_theme', 'ln_hero_register_menu' );
 
+/** Fallback menu shown until a menu is assigned to the LN Hero Menu location. */
+function ln_hero_menu_fallback() {
+	$items = array( 'HOME' => home_url( '/' ), 'ON TRACK' => '#next', 'OFF TRACK' => '#next', 'CALENDAR' => '#next', 'STORE' => '#next' );
+	echo '<nav class="ln-menu-links"><ul class="ln-menu-list">';
+	foreach ( $items as $label => $url ) {
+		echo '<li><a href="' . esc_url( $url ) . '"' . ( 'HOME' === $label ? ' class="is-current"' : '' ) . '>' . esc_html( $label ) . '</a></li>';
+	}
+	echo '</ul></nav>';
+}
+
 
 function ln_hero_page_has_shortcode() {
 	if ( ! is_singular() ) {
